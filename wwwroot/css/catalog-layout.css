@@ -1,4 +1,3 @@
-/* Компоновка коммерческого каталога */
 #commercial-section {
   max-width: 1500px;
 }
@@ -14,7 +13,7 @@
 
 #commercial-section .catalog {
   grid-template-columns: minmax(245px, 280px) minmax(0, 1fr);
-  gap: 14px;
+
 }
 
 #catalog-sidebar.sidebar {
@@ -98,15 +97,7 @@
 
 #commercial-section .catalog-hero {
   margin: 0 0 12px;
-  padding: 12px;
-  border-color: var(--border);
-  border-radius: 15px;
-  background: linear-gradient(140deg, var(--surface), var(--blue-pale));
-  box-shadow: none;
-}
 
-#commercial-section .catalog-hero::before {
-  display: none;
 }
 
 .catalog-hero .commercial-type-heading {
@@ -114,17 +105,10 @@
 }
 
 #commercial-section .commercial-types .category {
-  min-height: 35px;
-  padding: 5px 8px;
-  border-color: var(--border);
-  background: var(--surface);
-  color: var(--text);
-}
 
-#commercial-section .commercial-types .category:has(input:checked) {
-  border-color: var(--blue-soft);
-  background: var(--blue-soft);
-  color: var(--blue-dark);
+  border-color: var(--border);
+
+  color: var(--text);
 }
 
 .results .toolbar {
@@ -175,24 +159,11 @@
   border-radius: 9px;
 }
 
-@media (max-width: 950px) {
-  #commercial-section .catalog {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .results .cards:not(.grid) .card-info:has(> .card-photo) {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
 #catalog-sidebar .location-modes {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-block: 5px;
-  padding: 3px;
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  background: var(--blue-pale);
+
 }
 
 .location-modes button {
@@ -207,12 +178,8 @@
   color: #fff;
 }
 
-#commercial-section .unit-stats > div {
-  border-radius: 14px;
-}
-
 #commercial-section .unit-stats strong {
-  font-size: clamp(16px, 2vw, 25px);
+
   color: var(--title);
 }
 
@@ -227,7 +194,6 @@
   overflow-wrap: anywhere;
 }
 
-/* Модальное окно с фотогалереей */
 .results #details-dialog {
   width: min(900px, calc(100% - 24px));
   max-height: min(90dvh, 940px);
@@ -355,19 +321,10 @@
   object-fit: cover;
 }
 
-@media (max-width: 510px) {
-  .photo-thumbs {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 4px;
-  }
-}
-
 #operations {
   flex-wrap: wrap;
 }
 
-
-/* Галочки в выпадающих фильтрах */
 .filter-multi {
   position: relative;
 }
@@ -435,7 +392,6 @@
   margin: 0;
 }
 
-/* Состояние выгрузки рядом с кнопкой */
 .export-control {
   min-width: 0;
 }
@@ -452,8 +408,6 @@
   margin: 0;
 }
 
-
-/* Перемещение увеличенной фотографии */
 .photo-pan.is-zoomed {
   cursor: grab;
 }
@@ -463,8 +417,6 @@
   user-select: none;
 }
 
-
-/* Полноэкранный режим галереи */
 .results #details-dialog:has(.photo-viewer.is-expanded) {
   inset: 0;
   width: 100%;
@@ -488,7 +440,7 @@
 
 .photo-viewer.is-expanded {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto auto;
+
   gap: clamp(8px, 1.5dvh, 14px);
   height: 100%;
   padding: clamp(8px, 2vw, 24px);
@@ -555,23 +507,19 @@
 
 .photo-viewer.is-expanded .photo-thumbs {
   display: flex;
-  justify-content: center;
+
   gap: clamp(4px, 1vw, 10px);
   margin: 0;
 }
 
 .photo-viewer.is-expanded .photo-thumbs button {
-  width: min(16vw, 92px);
+
   border-color: #cfdef5;
   background: #eaf3ff;
 }
 
 .photo-viewer.is-expanded .photo-thumbs button:is([aria-pressed="true"], :hover) {
   border-color: #235de2;
-}
-
-.photo-viewer.is-expanded .photo-thumbs .object-photo {
-  max-height: min(13dvh, 65px);
 }
 
 .photo-viewer.is-expanded button:focus-visible {
@@ -587,9 +535,6 @@
   padding-inline: 11px;
 }
 
-
-
-/* Ссылка на карту и ошибки поиска */
 #location-map {
   display: inline-block;
   margin-bottom: 6px;
@@ -603,30 +548,6 @@
   font-size: 13px;
 }
 
-
-
-#details-dialog .detail-description {
-  margin-top: 16px;
-  padding: 14px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--bg);
-}
-
-#details-dialog .detail-description h3 {
-  margin: 0 0 8px;
-  color: var(--title);
-  font-size: 16px;
-}
-
-#details-dialog .detail-description p {
-  margin: 0;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-
-/* Стрелка для продолжения прокрутки подробностей */
 .details-scroll-hint {
   position: sticky;
   bottom: 0;
@@ -658,7 +579,6 @@
   background: #1849bc;
 }
 
-/* Галерея в «Подробнее»: миниатюры рядом с большим фото */
 .photo-viewer:not(.is-expanded) {
   --photo-height: clamp(230px, 51dvh, 510px);
   display: grid;
@@ -707,25 +627,6 @@
   border-color: var(--blue);
 }
 
-@media (max-width: 480px) {
-  .photo-viewer:not(.is-expanded) {
-    --photo-height: clamp(175px, 42dvh, 320px);
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "photo" "thumbs" "controls";
-  }
-
-  .photo-viewer:not(.is-expanded) .photo-thumbs {
-    flex-direction: row;
-    align-items: center;
-    max-height: none;
-  }
-
-  .photo-viewer:not(.is-expanded) .photo-thumbs button {
-    width: clamp(43px, 14vw, 65px);
-  }
-}
-
-/* Полноэкранная раскладка: лента фотографий и основное полотно */
 .photo-viewer.is-expanded {
   grid-template-columns: clamp(72px, 9vw, 120px) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) auto;
@@ -769,24 +670,6 @@
   max-height: none;
 }
 
-@media (max-width: 600px) {
-  .photo-viewer.is-expanded {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr) auto auto;
-    grid-template-areas: "photo" "thumbs" "controls";
-  }
-
-  .photo-viewer.is-expanded .photo-thumbs {
-    flex-direction: row;
-    justify-self: center;
-    max-width: 100%;
-  }
-
-  .photo-viewer.is-expanded .photo-thumbs button {
-    width: clamp(34px, 14vw, 64px);
-  }
-}
-
 #location-filter .field:has([role="combobox"]) {
   position: relative;
 }
@@ -819,10 +702,10 @@
   background: var(--blue-soft);
   color: var(--blue-dark);
 }
-/* Согласованный вариант с акцентом на фото */
+
 .results .cards .photo-emphasis {
   display: block;
-  padding: 16px;
+
 }
 .results .cards .photo-emphasis .card-info {
   display: grid;
@@ -836,7 +719,7 @@
   height: 100%;
   min-height: 250px;
   margin: 0;
-  border-radius: 12px;
+
   overflow: hidden;
 }
 .results .photo-emphasis .card-photo img {
@@ -877,46 +760,27 @@
 .results .cards.grid .photo-emphasis .card-photo,
 .results .cards.grid .photo-emphasis .card-photo-placeholder,
 .results .cards.grid .photo-emphasis .card-photo img { height: 220px; min-height: 220px; }
-@media (max-width: 700px) {
-  .results .cards .photo-emphasis .card-info { display: flex; flex-direction: column; gap: 16px; }
-  .results .cards .photo-emphasis .card-photo,
-  .results .cards .photo-emphasis .card-photo-placeholder,
-  .results .cards .photo-emphasis .card-photo img { height: 220px; min-height: 220px; }
-}
-/* Оформление характеристик в подробностях */
+
 #details-dialog .detail-facts {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 28px;
+
   margin-block: 18px;
 }
 #details-dialog .detail-fact,
 #details-dialog .detail-fact:first-child {
-  display: flex;
-  align-items: baseline;
+
   justify-content: space-between;
-  gap: 14px;
+
   grid-column: auto;
-  padding: 12px 0;
-  border: 0;
-  border-bottom: 1px solid var(--border);
-  border-radius: 0;
-  background: transparent;
+
 }
 #details-dialog .detail-fact dt {
   flex: 0 1 45%;
-  margin: 0;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.5;
+
 }
 #details-dialog .detail-fact dd {
   flex: 1 1 55%;
   margin: 0;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.5;
-  text-align: right;
+
 }
 #details-dialog .detail-fact.detail-price {
   grid-column: 1 / -1;
@@ -947,18 +811,11 @@
 #details-dialog .detail-unit dd { flex: 0 1 auto; font-size: 14px; text-align: left; }
 #details-dialog .detail-area dd { font-size: 21px; font-weight: 700; }
 #details-dialog .detail-description {
-  padding: 18px 0;
-  border: 0;
+
   border-top: 1px solid var(--border);
-  border-radius: 0;
-  background: transparent;
+
 }
-#details-dialog .detail-description p { font-size: 15px; line-height: 1.7; }
-@media (max-width: 560px) {
-  #details-dialog .detail-facts { grid-template-columns: minmax(0, 1fr); gap: 0; }
-  #details-dialog .detail-fact { gap: 12px; }
-}
-/* Синий скролл выпадающих списков */
+
 .location-suggestions,
 .filter-multi-options,
 #quick select,
@@ -1017,7 +874,7 @@
     color: var(--blue);
   }
 }
-/* Единицы аренды всегда остаются одной строкой */
+
 #commercial-section .unit-stats strong .unit-stat-unit {
   display: block;
   white-space: nowrap;
@@ -1036,9 +893,7 @@
   overflow-wrap: normal;
   font-size: clamp(16px, 1.65vw, 22px);
 }
-@media (max-width: 420px) {
-  #commercial-section .unit-stats > div { flex-basis: 100%; }
-}
+
 .number-control { position: relative; display: block; min-width: 0; }
 .number-control input[type="number"] { width: 100%; padding-right: 30px; appearance: textfield; -moz-appearance: textfield; }
 .number-control input::-webkit-inner-spin-button,
@@ -1057,14 +912,14 @@
   cursor: pointer;
 }
 .number-arrows button:hover { background: var(--blue-soft); }
-/* Компактная иерархия подробностей */
+
 #details-dialog .detail-overview {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 18px 28px;
-  padding: 22px 0;
+
   border-bottom: 1px solid var(--border);
 }
 #details-dialog .detail-cost-value {
@@ -1082,34 +937,21 @@
 #details-dialog .detail-size { display: flex; flex-direction: column; gap: 4px; }
 #details-dialog .detail-size span { color: var(--muted); font-size: 14px; }
 #details-dialog .detail-size strong { color: var(--title); font-size: 24px; white-space: nowrap; }
-#details-dialog .detail-facts { grid-template-columns: minmax(0, 1fr); gap: 0; margin: 10px 0 20px; }
+
 #details-dialog .detail-fact,
 #details-dialog .detail-fact:first-child {
-  display: grid;
-  grid-template-columns: minmax(120px, 32%) minmax(0, 1fr);
+
   align-items: baseline;
-  padding: 9px 0;
-  gap: 16px;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
+
 }
-#details-dialog .detail-fact dt { font-size: 14px; margin: 0; line-height: 1.5; }
-#details-dialog .detail-fact dd { text-align: left; font-size: 15px; font-weight: 500; line-height: 1.5; }
-@media(max-width: 420px) {
-  #details-dialog .detail-fact,
-  #details-dialog .detail-fact:first-child { grid-template-columns: minmax(0, 42%) minmax(0, 1fr); gap: 10px; }
-}
-/* Табличное оформление характеристик */
+#details-dialog .detail-fact dt {  margin: 0;  }
+
 #details-dialog .detail-facts {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 0;
   margin: 18px 0 24px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--surface);
+
 }
 #details-dialog .detail-fact,
 #details-dialog .detail-fact:first-child {
@@ -1125,7 +967,7 @@
 #details-dialog .detail-fact:nth-child(odd) {
   background: var(--blue-pale);
 }
-#details-dialog .detail-fact:last-child { border-bottom: 0; }
+
 #details-dialog .detail-fact dt,
 #details-dialog .detail-fact dd {
   margin: 0;
@@ -1135,23 +977,14 @@
   overflow-wrap: anywhere;
 }
 #details-dialog .detail-fact dt {
-  color: var(--muted);
+
   border-right: 1px solid var(--border);
 }
 #details-dialog .detail-fact dd {
-  color: var(--title);
-  font-weight: 500;
+
   text-align: left;
 }
-@media (max-width: 420px) {
-  #details-dialog .detail-fact,
-  #details-dialog .detail-fact:first-child {
-    grid-template-columns: minmax(0, 42%) minmax(0, 1fr);
-  }
-  #details-dialog .detail-fact dt,
-  #details-dialog .detail-fact dd { padding: 10px; }
-}
-/* Парные действия и мягкие градиенты */
+
 #location-filter .location-actions {
   display: flex;
   flex-wrap: nowrap;
@@ -1198,15 +1031,7 @@
   font-size: 14px;
   line-height: 1.4;
 }
-.results .cards .photo-emphasis {
-  background: linear-gradient(145deg, var(--surface) 60%, var(--blue-pale));
-}
-#details-dialog .detail-overview {
-  padding: 20px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: linear-gradient(120deg, var(--blue-pale), var(--surface));
-}
+
 #details-dialog {
   background: linear-gradient(160deg, var(--surface) 65%, var(--blue-pale));
 }
@@ -1214,11 +1039,7 @@
 #location-filter .location-actions button:hover {
   filter: brightness(1.05);
 }
-@media (max-width: 420px) {
-  .results .photo-emphasis .card-primary-actions { width: 100%; flex-wrap: nowrap; }
-  .results .photo-emphasis .card-primary-actions .button { flex: 1 1 0; min-width: 0; padding: 9px 7px; font-size: 13px; }
-}
-/* Выбор режима поиска и категорий */
+
 #catalog-sidebar .location-modes {
   padding: 4px;
   gap: 4px;
@@ -1246,9 +1067,9 @@
   box-shadow: 0 3px 8px rgb(25 64 130 / 22%), inset 0 1px 0 rgb(255 255 255 / 20%);
 }
 #commercial-section .commercial-types .category {
-  background: linear-gradient(125deg, var(--surface), var(--blue-pale));
+
   border: 1px solid var(--border);
-  box-shadow: 0 2px 5px rgb(25 64 130 / 4%);
+
 }
 #commercial-section .commercial-types .category:hover {
   border-color: var(--blue);
@@ -1256,9 +1077,7 @@
 }
 #commercial-section .commercial-types .category:has(input:checked) {
   border-color: var(--blue);
-  background: linear-gradient(125deg, var(--blue), var(--blue-dark));
-  color: #fff;
-  box-shadow: 0 4px 12px rgb(25 64 130 / 20%);
+
 }
 #commercial-section .commercial-types .category:has(input:checked) b {
   background: rgb(255 255 255 / 20%);
@@ -1276,24 +1095,13 @@
     transition: background-color .15s, border-color .15s, box-shadow .15s;
   }
 }
-/* Свет и глубина в палитре LandScope */
-body:has(#commercial-section:not([hidden])) {
-  background:
-    radial-gradient(ellipse at 4% 4%, rgb(64 161 240 / 17%), transparent 38rem),
-    radial-gradient(ellipse at 95% 22%, rgb(61 106 225 / 12%), transparent 45rem),
-    var(--bg);
-}
-#commercial-section .catalog-heading h1 {
-  color: var(--title);
-  letter-spacing: -.025em;
-  text-shadow: 0 2px 12px rgb(62 127 223 / 12%);
-}
+
 #commercial-section .catalog-hero {
   position: relative;
   isolation: isolate;
-  background: linear-gradient(125deg, var(--surface), var(--blue-pale));
+
   border-color: var(--border);
-  box-shadow: 0 10px 30px rgb(30 80 155 / 8%), inset 0 1px 0 rgb(255 255 255 / 55%);
+
 }
 #commercial-section .catalog-hero::before {
   content: "";
@@ -1308,14 +1116,7 @@ body:has(#commercial-section:not([hidden])) {
   border-radius: 50%;
   box-shadow: 0 0 65px rgb(76 153 236 / 10%);
 }
-#catalog-sidebar :is(.data-panel, .filters-panel) {
-  background: linear-gradient(150deg, var(--surface) 45%, var(--blue-pale));
-  box-shadow: 0 8px 24px rgb(30 80 155 / 6%), inset 0 1px 0 rgb(255 255 255 / 45%);
-}
-#commercial-section .unit-stats > div {
-  background: linear-gradient(145deg, var(--surface) 30%, var(--blue-pale));
-  box-shadow: 0 4px 12px rgb(30 80 155 / 5%), inset 0 1px 0 rgb(255 255 255 / 45%);
-}
+
 #commercial-section #operations {
   background: linear-gradient(120deg, var(--blue-pale), var(--surface));
   box-shadow: inset 0 1px 3px rgb(30 80 155 / 7%);
@@ -1326,12 +1127,7 @@ body:has(#commercial-section:not([hidden])) {
   border-color: var(--blue);
   box-shadow: 0 4px 12px rgb(30 80 155 / 20%), inset 0 1px 0 rgb(255 255 255 / 25%);
 }
-.results .cards .photo-emphasis {
-  box-shadow: 0 7px 22px rgb(30 80 155 / 7%), inset 0 1px 0 rgb(255 255 255 / 50%);
-}
-.results .cards .photo-emphasis:is(:hover, :focus-within) {
-  box-shadow: 0 10px 28px rgb(30 80 155 / 13%);
-}
+
 .results .photo-emphasis .card-details,
 #location-filter .location-actions .primary {
   background: linear-gradient(125deg, #347fea, var(--blue) 48%, var(--blue-dark));
@@ -1344,13 +1140,11 @@ body:has(#commercial-section:not([hidden])) {
   background: linear-gradient(115deg, #163466, #2155a6 65%, #3179cf);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 20%);
 }
-#details-dialog .detail-overview {
-  background: radial-gradient(ellipse at 95% 0, rgb(94 174 244 / 13%), transparent 65%), linear-gradient(120deg, var(--blue-pale), var(--surface));
-}
+
 @media (prefers-reduced-motion: no-preference) {
   .results .cards .photo-emphasis { transition: box-shadow .18s, border-color .18s; }
 }
-/* Цельная визуальная композиция каталога */
+
 body:has(#commercial-section:not([hidden])) {
   background:
     radial-gradient(ellipse at 0 0, rgb(89 184 239 / 24%), transparent 650px),
@@ -1449,13 +1243,12 @@ body:has(#commercial-section:not([hidden])) .logo {
   min-height: 43px;
   padding: 8px 11px;
   border-radius: 11px;
-  background: var(--surface);
+
   box-shadow: none;
   font-size: 14px;
 }
 #commercial-section .commercial-types .category:has(input:checked) {
-  background: linear-gradient(125deg, #2877e3, #214ca8);
-  color: #fff;
+
   box-shadow: 0 5px 12px rgb(35 93 226 / 18%);
 }
 #commercial-section .unit-stats { gap: 10px; margin-bottom: 18px; }
@@ -1470,7 +1263,6 @@ body:has(#commercial-section:not([hidden])) .logo {
 }
 #commercial-section .unit-stats strong { margin-top: 6px; letter-spacing: -.025em; }
 
-
 .results .toolbar {
   padding: 15px 18px;
   border: 1px solid var(--border);
@@ -1483,8 +1275,7 @@ body:has(#commercial-section:not([hidden])) .logo {
   padding: 18px 18px 18px 43px;
   border-radius: 20px;
   border-color: var(--border);
-  background: var(--surface);
-  box-shadow: 0 8px 26px rgb(25 65 125 / 6%);
+
 }
 .results .photo-emphasis .card-photo,
 .results .photo-emphasis .card-photo-placeholder { border-radius: 13px; }
@@ -1511,14 +1302,7 @@ body:has(#commercial-section:not([hidden])) .logo {
   background: linear-gradient(120deg, var(--blue-pale), var(--surface));
   box-shadow: inset 0 0 0 1px var(--border);
 }
-#details-dialog .detail-facts { border-radius: 14px; }
-@media(max-width: 700px) {
-  #commercial-section .catalog-heading { min-height: 135px; margin: 16px 0; padding: 24px; border-radius: 18px; }
-  #commercial-section .catalog-heading::before { right: -210px; }
-  #commercial-section .catalog-hero { padding: 16px; }
-  .results .cards .photo-emphasis { padding: 16px 16px 16px 38px; }
-}
-/* Мягкий рисунок на карточках */
+
 .results .cards .photo-emphasis {
   background:
     radial-gradient(ellipse at 100% 0, rgb(81 167 236 / 10%), transparent 52%),
@@ -1547,7 +1331,7 @@ body:has(#commercial-section:not([hidden])) .logo {
   background: linear-gradient(135deg, var(--surface), var(--blue-soft));
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 50%);
 }
-/* Чекбоксы LandScope */
+
 #commercial-section input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
@@ -1609,7 +1393,7 @@ body:has(#commercial-section:not([hidden])) .logo {
 @media (prefers-reduced-motion: no-preference) {
   #commercial-section input[type="checkbox"] { transition: box-shadow .15s, border-color .15s; }
 }
-/* Чекбоксы LandScope */
+
 #filters-dialog input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
@@ -1671,7 +1455,7 @@ body:has(#commercial-section:not([hidden])) .logo {
 @media (prefers-reduced-motion: no-preference) {
   #filters-dialog input[type="checkbox"] { transition: box-shadow .15s, border-color .15s; }
 }
-/* Окно выбора сведений */
+
 #filters-dialog {
   padding: 0;
   border: 1px solid var(--border);
@@ -1765,14 +1549,7 @@ body:has(#commercial-section:not([hidden])) .logo {
   border-color: #2968cc;
   box-shadow: 0 4px 12px rgb(35 93 226 / 20%), inset 0 1px 0 rgb(255 255 255 / 25%);
 }
-@media(max-width: 420px) {
-  #filters-dialog .dialog-header { padding: 20px 16px; }
-  #filters-dialog .filter-content { padding: 18px 16px; }
-  #filters-dialog .filter-menu { padding: 14px 16px; }
-  #filters-dialog .filter-actions { flex-wrap: wrap; gap: 10px; }
-  #filters-dialog .filter-confirm-actions { flex-wrap: wrap; gap: 8px; }
-}
-/* Подробности и галерея в едином стиле */
+
 .results .photo-emphasis .card-details {
   position: relative;
   gap: 10px;
@@ -1896,12 +1673,7 @@ body:has(#commercial-section:not([hidden])) .logo {
   background: var(--surface);
   color: var(--title);
 }
-@media(max-width: 600px) {
-  #details-dialog > .dialog-header { padding: 20px 16px; gap: 12px; }
-  #details-dialog .photo-viewer.is-expanded { padding: 10px; gap: 10px; }
-  #details-dialog .photo-viewer.is-expanded .photo-controls { padding: 6px; gap: 5px; }
-}
-/* Общая палитра меню и категорий */
+
 .header .section-nav .section-links {
   background: linear-gradient(140deg, var(--surface) 30%, var(--blue-pale));
   border: 1px solid var(--border);
@@ -1927,7 +1699,7 @@ body:has(#commercial-section:not([hidden])) .logo {
   background: linear-gradient(125deg, #388bf0, #245cd4 60%, #204aa7);
   color: #fff;
 }
-/* Кольца на карточках объектов */
+
 .results .cards .photo-emphasis {
   position: relative;
   isolation: isolate;
@@ -1958,11 +1730,7 @@ body:has(#commercial-section:not([hidden])) .logo {
   border: 15px solid rgb(79 155 231 / 5%);
   border-radius: 50%;
 }
-/* Кольца на счётчике объектов */
 
-
-
-/* Сортировка */
 #sort {
   border: 1px solid var(--border);
   border-radius: 11px;
@@ -2003,7 +1771,7 @@ body:has(#commercial-section:not([hidden])) .logo {
   }
   #sort option::checkmark { color: currentColor; }
 }
-/* Таблица характеристик с выделенной колонкой подписей */
+
 #details-dialog .detail-facts {
   border: 1px solid var(--border);
   border-radius: 15px;
@@ -2045,16 +1813,7 @@ body:has(#commercial-section:not([hidden])) .logo {
 #details-dialog .detail-fact:hover dd {
   background: linear-gradient(90deg, var(--surface), var(--blue-pale));
 }
-@media(max-width: 420px) {
-  #details-dialog .detail-fact,
-  #details-dialog .detail-fact:first-child,
-  #details-dialog .detail-fact:nth-child(odd) {
-    grid-template-columns: minmax(0, 42%) minmax(0, 1fr);
-  }
-  #details-dialog .detail-fact dt { padding: 11px 12px; }
-  #details-dialog .detail-fact dd { padding: 11px 12px; font-size: 14px; }
-}
-/* Описание объекта */
+
 #details-dialog .detail-description {
   position: relative;
   margin-top: 22px;
@@ -2094,11 +1853,7 @@ body:has(#commercial-section:not([hidden])) .logo {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
-@media(max-width: 420px) {
-  #details-dialog .detail-description { padding: 18px 16px; }
-  #details-dialog .detail-description p { line-height: 1.75; }
-}
-/* Сортировка: приоритет над базовыми стилями option */
+
 @supports (appearance: base-select) and selector(::picker(select)) {
   #commercial-section #sort::picker(select) {
     padding: 8px;
@@ -2135,7 +1890,7 @@ body:has(#commercial-section:not([hidden])) .logo {
   }
   #commercial-section #sort:open::picker-icon { content: "▲"; }
 }
-/* Тёмная тема */
+
 :root.dark {
   --bg: #0c1525;
   --surface: #152338;
@@ -2183,82 +1938,6 @@ body:has(#commercial-section:not([hidden])) .logo {
   box-shadow: 0 6px 20px rgb(0 0 0 / 12%);
 }
 
-/* Мобильная компоновка */
-@media(max-width: 700px) {
-  body:has(#commercial-section:not([hidden])) .shell { width: calc(100% - 24px); }
-  body:has(#commercial-section:not([hidden])) .header-inner {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    padding-block: 12px;
-  }
-  body:has(#commercial-section:not([hidden])) .brand { flex: 1; }
-  body:has(#commercial-section:not([hidden])) .header-inner #theme { order: 1; }
-  body:has(#commercial-section:not([hidden])) .header-inner .section-nav {
-    order: 2;
-    flex-basis: 100%;
-    width: 100%;
-    display: flex;
-    gap: 8px;
-  }
-  body:has(#commercial-section:not([hidden])) .section-nav .section-tab { flex: 1; min-width: 0; }
-  body:has(#commercial-section:not([hidden])) .section-nav .section-action { font-size: 12px; }
-  #commercial-section .catalog { gap: 16px; }
-  #catalog-sidebar.sidebar { position: static; max-height: none; overflow: visible; }
-  #catalog-sidebar :is(.data-panel, .filters-panel) { padding: 16px; margin-bottom: 12px; }
-  #commercial-section .catalog-heading { min-height: 116px; padding: 22px; }
-  #commercial-section .catalog-heading h1 { font-size: 27px; }
-  #commercial-section .top-controls { display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
-  #commercial-section #operations { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); width: 100%; }
-  #commercial-section #operations button { padding: 10px 5px; font-size: 13px; min-height: 44px; }
-  #commercial-section .catalog-search-form { display: flex; gap: 8px; width: 100%; }
-  #commercial-section .catalog-search-form .search { flex: 1; min-width: 0; }
-  #commercial-section .catalog-search-form input { width: 100%; min-width: 0; font-size: 16px; }
-  #commercial-section .catalog-search-submit { padding-inline: 12px; min-height: 44px; }
-  #commercial-section .commercial-types { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
-  #commercial-section .commercial-types .category { min-width: 0; padding: 10px 8px; font-size: 12px; gap: 6px; }
-  #commercial-section .unit-stats { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
-  #commercial-section .unit-stats > div { padding: 12px; }
-  
-  #commercial-section .unit-stats strong { font-size: 15px; }
-  .results .toolbar { padding: 12px; gap: 12px; }
-  .results .toolbar .sort { flex: 1; min-width: 0; flex-wrap: wrap; }
-  .results .toolbar #sort { max-width: 100%; min-height: 44px; font-size: 13px; }
-  .results .export-control { flex: 1; }
-  .results #export-excel { width: 100%; min-height: 44px; font-size: 13px; }
-  .results .cards.grid { grid-template-columns: minmax(0,1fr); }
-  .results .cards .photo-emphasis { padding: 12px; border-radius: 17px; }
-  .results .cards .photo-emphasis .card-info { gap: 14px; }
-  .results .pick-card { inset: 22px auto auto 22px; z-index: 1; padding: 7px; border-radius: 8px; background: var(--surface); box-shadow: 0 2px 8px rgb(0 0 0 / 12%); }
-  .results .photo-emphasis .card-copy { padding: 0 3px 3px; }
-  .results .photo-emphasis .card-copy .price strong { font-size: 25px; }
-  .results .photo-emphasis .card-title { font-size: 17px; }
-  .results .photo-emphasis .card-footer { gap: 12px; }
-  .results .photo-emphasis .card-primary-actions { width: 100%; display: flex; }
-  .results .photo-emphasis .card-primary-actions .button { flex: 1; min-height: 44px; }
-  #commercial-section input:not([type="checkbox"]), #filters-dialog input { font-size: 16px; }
-  .results #details-dialog { width: calc(100% - 12px); max-height: 95dvh; border-radius: 18px; }
-  #details-dialog .details-body { padding: 14px; }
-  #details-dialog > .dialog-header { padding: 17px; }
-  #details-dialog > .dialog-header h2 { font-size: 21px; }
-  #details-dialog .detail-overview { padding: 18px; gap: 16px; }
-  #details-dialog .detail-cost-value { font-size: 27px; }
-  #details-dialog .detail-size strong { font-size: 22px; }
-  #filters-dialog { width: calc(100% - 20px); max-height: 94dvh; }
-  #filters-dialog .filter-actions { display: flex; flex-wrap: wrap; }
-  #filters-dialog .filter-confirm-actions { display: flex; flex: 1; }
-  #filters-dialog .filter-actions .button { min-height: 44px; }
-}
-@media(max-width: 360px) {
-  #commercial-section .unit-stats { grid-template-columns: minmax(0,1fr); }
-  #commercial-section .commercial-types { grid-template-columns: minmax(0,1fr); }
-}
-/* Градиент общей панели результатов */
-#commercial-section .toolbar {
-  background: linear-gradient(110deg, var(--blue-soft), var(--blue-pale) 48%, var(--surface));
-  border: 1px solid var(--border);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 35%), 0 4px 14px rgb(25 65 125 / 5%);
-}
 #commercial-section .toolbar #count {
   display: inline-block;
   min-height: auto;
@@ -2267,31 +1946,19 @@ body:has(#commercial-section:not([hidden])) .logo {
   border-radius: 0;
   background: none;
   box-shadow: none;
-  color: var(--title);
-  -webkit-text-fill-color: var(--title);
-  font-size: 17px;
-  font-weight: 650;
+
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
 }
 #commercial-section .toolbar #count::before { content: none; }
-@media(max-width: 700px) {
-  #commercial-section .toolbar #count { flex-basis: 100%; font-size: 16px; }
-}
-/* Световой фон панели результатов */
+
 #commercial-section .toolbar {
   position: relative;
   isolation: isolate;
-  border-radius: 17px;
-  padding: 18px 20px;
-  background:
-    radial-gradient(ellipse at 0 0, rgb(79 169 238 / 18%), transparent 58%),
-    linear-gradient(115deg, var(--blue-soft), var(--blue-pale) 42%, var(--surface) 85%);
-  border: 1px solid var(--border);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 65%), 0 6px 20px rgb(25 65 125 / 7%);
+
 }
 #commercial-section .toolbar::before {
-  content: "";
+
   position: absolute;
   z-index: -1;
   pointer-events: none;
@@ -2305,18 +1972,9 @@ body:has(#commercial-section:not([hidden])) .logo {
 #commercial-section .toolbar #count {
   color: var(--title);
   -webkit-text-fill-color: var(--title);
-  font-size: 18px;
-  letter-spacing: -.02em;
+
 }
-:root.dark #commercial-section .toolbar {
-  background: radial-gradient(ellipse at 0 0, rgb(58 129 206 / 18%), transparent 65%), linear-gradient(115deg, #1c3655, var(--surface) 85%);
-  box-shadow: inset 0 1px 0 rgb(144 190 244 / 9%), 0 6px 20px rgb(0 0 0 / 14%);
-}
-@media(max-width: 700px) {
-  #commercial-section .toolbar { padding: 15px; }
-  #commercial-section .toolbar #count { font-size: 17px; }
-}
-/* Спокойная панель инструментов */
+
 #commercial-section .toolbar {
   padding: 17px 20px;
   border: 1px solid var(--border);
@@ -2335,14 +1993,12 @@ body:has(#commercial-section:not([hidden])) .logo {
   background: linear-gradient(180deg, var(--surface), var(--blue-pale));
   box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
 }
-@media(max-width: 700px) {
-  #commercial-section .toolbar { padding: 14px; }
-}
+
 #details-dialog #details-more {
   font-size: 16px;
   line-height: 1;
 }
-/* Прокручиваемая лента десяти фотографий */
+
 #details-dialog .photo-viewer .photo-thumbs {
   min-height: 0;
   min-width: 0;
@@ -2366,24 +2022,7 @@ body:has(#commercial-section:not([hidden])) .logo {
   flex-shrink: 0;
   min-height: 70px;
 }
-@media(max-width: 600px) {
-  #details-dialog .photo-viewer.is-expanded .photo-thumbs {
-    height: 88px;
-    max-height: 88px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    justify-self: stretch;
-  }
-}
-@media(max-width: 480px) {
-  #details-dialog .photo-viewer:not(.is-expanded) .photo-thumbs {
-    height: 84px;
-    max-height: 84px;
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-}
-/* Единый блок аккаунта в шапке */
+
 .header .header-inner .account-controls {
   display: flex;
   align-items: center;
@@ -2440,19 +2079,7 @@ body:has(#commercial-section:not([hidden])) .logo {
   font-weight: 600;
   box-shadow: 0 3px 8px rgb(35 93 226 / 16%);
 }
-@media(max-width:700px) {
-  .header .header-inner .account-controls {
-    order: 1;
-    margin-left: auto;
-    gap: 7px;
-  }
-  .account-controls .account-name { max-width: 85px; }
-}
-@media(max-width:420px) {
-  .header .header-inner .account-controls { width: 100%; margin-left: 0; }
-  .account-controls .account-name { max-width: none; flex: 1; }
-}
-/* Навигация по центру шапки */
+
 @media(min-width: 1001px) {
   body:has(#commercial-section:not([hidden])) .header .header-inner {
     display: grid;

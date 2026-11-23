@@ -1,14 +1,10 @@
 .header-inner > .section-nav {
-  --menu-accent: var(--blue, #155eef);
-  --menu-ink: var(--text, #172033);
-  --menu-surface: var(--surface, #fff);
-  --menu-border: var(--border, #dfe5ee);
-  --menu-highlight: var(--blue-pale, #f0f5ff);
+
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+
   min-width: 0;
   overflow: visible;
 }
@@ -25,7 +21,7 @@ body.dark-theme .section-nav {
   display: flex;
   align-items: center;
   min-width: 0;
-  border-radius: 10px;
+
   color: var(--menu-ink);
   font-size: 14px;
   line-height: 1.3;
@@ -55,10 +51,10 @@ body.dark-theme .section-nav {
 .section-nav summary {
   display: grid;
   place-items: center;
-  width: 38px;
+
   min-height: 44px;
   border-radius: 0 10px 10px 0;
-  color: var(--menu-accent);
+
   cursor: pointer;
   font-size: 0;
   list-style: none;
@@ -69,16 +65,10 @@ body.dark-theme .section-nav {
 }
 
 .section-nav summary::before {
-  width: 7px;
-  height: 7px;
-  border: solid currentColor;
+
   border-width: 0 1.5px 1.5px 0;
   content: "";
-  transform: translateY(-2px) rotate(45deg);
-}
 
-.section-nav details[open] > summary::before {
-  transform: translateY(2px) rotate(225deg);
 }
 
 .section-nav :is(summary, a):focus-visible {
@@ -93,14 +83,14 @@ body.dark-theme .section-nav {
   inset: 100% auto auto 0;
   z-index: 110;
   display: grid;
-  min-width: 188px;
+
   gap: 3px;
-  padding: 6px;
+
   border: 1px solid var(--menu-border);
-  border-radius: 12px;
+
   background: var(--menu-surface);
   color: var(--menu-ink);
-  box-shadow: 0 12px 28px #10182826;
+
 }
 
 .section-nav details:not([open]) > .section-links {
@@ -114,8 +104,7 @@ body.dark-theme .section-nav {
 
 .section-nav .section-links a,
 .header .section-nav .section-links a {
-  display: block;
-  padding: 11px 12px;
+
   border-radius: 8px;
   color: inherit;
   font-weight: 600;
@@ -128,54 +117,6 @@ body.dark-theme .section-nav {
   color: var(--menu-accent);
 }
 
-@media (max-width: 1050px) {
-  .site-header:has(.section-nav) {
-    height: auto;
-  }
-
-  .header-inner:has(> .section-nav) {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 8px;
-    padding-block: 8px;
-  }
-
-  .header-inner > .section-nav {
-    flex: 0 0 100%;
-    order: 10;
-    justify-content: flex-start;
-  }
-}
-
-@media (max-width: 600px) {
-  .header-inner > .section-nav {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .section-nav .section-tab {
-    border: 1px solid var(--menu-border);
-    font-size: 13px;
-  }
-
-  .section-nav .section-tab:nth-child(even) .section-links {
-    right: 0;
-    left: auto;
-  }
-
-  .section-nav summary {
-    width: 44px;
-  }
-}
-
-@media (max-width: 360px) {
-  .header-inner > .section-nav {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-/* Верхнее меню LandScope */
 .header-inner > .section-nav {
   --menu-accent: #1d55c7;
   --menu-ink: #253e69;
@@ -277,20 +218,7 @@ body.dark-theme .section-nav {
 .section-nav .section-links a + a::before {
   content: "⇄";
 }
-@media (max-width: 1050px) {
-  .header-inner > .section-nav { flex-basis: 100%; }
-}
-@media (max-width: 600px) {
-  .header-inner > .section-nav { gap: 4px; padding: 4px; }
-  .section-nav .section-tab { border-color: transparent; }
-  .section-nav .section-tab > a,
-  .header .section-nav .section-tab > a { gap: 6px; padding-inline-start: 7px; }
-  .section-nav .section-tab > a::before { flex-basis: 14px; height: 14px; }
-  .section-nav summary { width: 44px; }
-  .section-nav .section-tab:nth-child(odd) .section-links { left: 0; right: auto; }
-}
 
-/* Стрелка выпадающего меню */
 .section-nav summary::before {
   width: 22px;
   height: 22px;
@@ -329,7 +257,6 @@ body.dark-theme .section-nav {
   .section-nav summary::after { transition: none; }
 }
 
-/* Две вкладки, отдельные ссылки и стрелки */
 .section-nav-actions .section-action::before {
   display: none;
 }
@@ -358,17 +285,6 @@ body.dark-theme .section-nav {
   mask: var(--tab-icon) center / contain no-repeat;
   transform: translateY(-50%);
   pointer-events: none;
-}
-
-@media (max-width: 600px) {
-  .section-nav-actions .section-tab {
-    position: static;
-  }
-
-  .section-nav.section-nav-actions .section-tab .section-links {
-    inset-inline: 0 auto;
-    max-width: 100%;
-  }
 }
 
 .section-nav .section-links {

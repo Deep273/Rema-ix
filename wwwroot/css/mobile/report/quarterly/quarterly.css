@@ -1,0 +1,34 @@
+@media (max-width: 1050px) {
+  .market-report .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .market-report .generate-button {
+    grid-column: 1 / -1;
+  }
+
+  .market-report .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .market-report .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .market-report :is(.builder-top, .section-heading, .chart-header, .data-card-header, .history-sector-header) {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .market-report :is(.segment-grid, .history-sector-grid) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 430px) {
+  .market-report :is(.form-grid, .kpi-grid) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

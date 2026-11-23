@@ -8,12 +8,12 @@
         find: "/api/analog/find"
     };
 
-    // /api/analog/find отдаёт не больше 100 самых свежих объявлений (Take(100))
+                                                                                
     const API_LIMIT = 100;
 
     const PER_PAGE = 4;
 
-    // Границы совпадают с сегментацией /api/report/calculate (AreaAnalytics)
+                                                                             
     const SEGMENTS = isLand ? [
         { name: "До 30 соток", match: area => area < 30 },
         { name: "От 30 до 50 соток", match: area => area >= 30 && area <= 50 },
@@ -24,7 +24,7 @@
         { name: "Свыше 150 м²", match: area => area > 150 }
     ];
 
-    // Значения колонки source, которые пишет парсер
+                                                    
     const SOURCES = {
         "cian": "ЦИАН",
         "avito": "Авито",
@@ -59,9 +59,9 @@
     const areaFormat = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 2 });
 
 
-    /* =========================================================
-    ФОРМАТИРОВАНИЕ
-    ========================================================= */
+                                                                
+                  
+                                                                
 
     function isNumber(value) {
         return typeof value === "number" && isFinite(value);
@@ -115,7 +115,7 @@
 
         if (!isSotka(unit)) return `${value} ${unit}`;
 
-        // Для дробных значений — «12,5 сотки»
+                                              
         return Number.isInteger(area)
             ? `${value} ${plural(area, "сотка", "сотки", "соток")}`
             : `${value} сотки`;
@@ -133,7 +133,7 @@
         return SOURCES[String(source || "").toLowerCase()] || source || "—";
     }
 
-    // Ссылки приходят из спарсенных данных — пропускаем только абсолютные http(s)
+                                                                                  
     function safeUrl(url) {
         if (!url) return null;
 
@@ -149,9 +149,9 @@
     }
 
 
-    /* =========================================================
-    СТАТИСТИКА
-    ========================================================= */
+                                                                
+              
+                                                                
 
     function median(values) {
         if (!values.length) return null;
@@ -198,9 +198,9 @@
     }
 
 
-    /* =========================================================
-    API
-    ========================================================= */
+                                                                
+       
+                                                                
 
     async function readJson(response) {
         try {
@@ -210,7 +210,7 @@
         }
     }
 
-    // POST /api/analog/find → массив LandPlotsReport, отсортированный по дате публикации
+                                                                                         
     async function requestAnalogs(params) {
         const response = await fetch(API.find, {
             method: "POST",
@@ -262,9 +262,9 @@
     }
 
 
-    /* =========================================================
-    ПОИСК
-    ========================================================= */
+                                                                
+         
+                                                                
 
     let toastResetTimer;
 
@@ -395,7 +395,7 @@
 
             notify("Не удалось подобрать аналоги", message, true);
 
-            // Если удачного поиска ещё не было — показываем ошибку вместо пустого списка
+                                                                                         
             if (!state.params) {
                 renderListMessage("!", "Не удалось загрузить аналоги", message);
             }
@@ -408,11 +408,11 @@
     }
 
 
-    /* =========================================================
-    СОРТИРОВКА
-    ========================================================= */
+                                                                
+              
+                                                                
 
-    // Пустые значения всегда в конце, при равенстве — порядок API (сначала новые)
+                                                                                  
     function compareBy(key, direction) {
         return (a, b) => {
             const left = a[key];
@@ -441,9 +441,9 @@
     }
 
 
-    /* =========================================================
-    ОТРИСОВКА
-    ========================================================= */
+                                                                
+             
+                                                                
 
     function renderAll() {
         renderLocation();
@@ -524,7 +524,7 @@
             || "Адрес не указан";
     }
 
-    // Отклонение цены за сотку от медианы текущей выборки
+                                                          
     function medianDeviation(item) {
         const base = state.stats.median;
 
@@ -665,11 +665,11 @@
     }
 
 
-    /* =========================================================
-    ПАГИНАЦИЯ
-    ========================================================= */
+                                                                
+             
+                                                                
 
-    // 1 … 4 5 6 … 10
+                     
     function pageList(current, total) {
         if (total <= 7) {
             return Array.from({ length: total }, (_, index) => index + 1);
@@ -678,7 +678,7 @@
         let from = Math.max(2, Math.min(current - 1, total - 4));
         let to = Math.min(total - 1, Math.max(current + 1, 5));
 
-        // Многоточие вместо одной пропущенной страницы не ставим
+                                                                 
         if (from === 3) from = 2;
         if (to === total - 2) to = total - 1;
 
@@ -739,8 +739,8 @@
     function goToPage(page) {
         if (page === state.page) return;
 
-        // Без прокрутки к началу списка: держим пагинацию на том же месте
-        // экрана, даже если новые карточки другой высоты
+                                                                          
+                                                         
         const pagination = $("pagination");
         const before = pagination.getBoundingClientRect().top;
 
@@ -755,9 +755,9 @@
     }
 
 
-    /* =========================================================
-    СОБЫТИЯ
-    ========================================================= */
+                                                                
+           
+                                                                
 
     function syncQuickFilters() {
         const from = $("areaFrom").value;
@@ -818,7 +818,7 @@
         findButton.addEventListener("click", () => findAnalogs());
         $("resetFilters").addEventListener("click", resetFilters);
 
-        // Enter в любом поле запускает поиск, смена списков — сразу
+                                                                    
         document.querySelectorAll(".search-builder input").forEach(input => {
             input.addEventListener("keydown", event => {
                 if (event.key === "Enter") findAnalogs();

@@ -8,7 +8,7 @@
         totalCount: "/api/report/total-count?section=" + encodeURIComponent(section)
     };
 
-    // Названия сегментов совпадают с теми, что отдаёт /api/report/calculate (AreaAnalytics)
+                                                                                            
     const SEGMENTS = section !== "land" ? ["До 50 м²", "От 50 до 150 м²", "Свыше 150 м²"] : [
         "До 30 соток",
         "От 30 до 50 соток",
@@ -47,9 +47,9 @@
     const compactFormat = new Intl.NumberFormat("ru-RU", { notation: "compact", maximumFractionDigits: 1 });
 
 
-    /* =========================================================
-    ФОРМАТИРОВАНИЕ
-    ========================================================= */
+                                                                
+                  
+                                                                
 
     function isNumber(value) {
         return typeof value === "number" && isFinite(value);
@@ -144,9 +144,9 @@
     }
 
 
-    /* =========================================================
-    ДАТЫ И ПЕРИОДЫ
-    ========================================================= */
+                                                                
+                  
+                                                                
 
     function toIsoDate(date) {
         const year = date.getFullYear();
@@ -156,7 +156,7 @@
         return `${year}-${month}-${day}`;
     }
 
-    // Аналог DateOnly.AddYears на сервере: 29 февраля превращается в 28 февраля
+                                                                                
     function shiftYears(isoDate, years) {
         const [year, month, day] = isoDate.split("-").map(Number);
         const targetYear = year + years;
@@ -180,7 +180,7 @@
         return startYear === endYear ? startYear : `${startYear}–${endYear}`;
     }
 
-    // Ключи периодов приходят с сервера в виде "Q3 2026" или "2026-09"
+                                                                       
     function parsePeriod(key) {
         let match = /^Q(\d) (\d{4})$/.exec(key);
 
@@ -197,7 +197,7 @@
         return null;
     }
 
-    // Сервер сортирует периоды как строки, поэтому "Q1 2026" оказывается раньше "Q2 2025"
+                                                                                          
     function periodSortValue(key) {
         const period = parsePeriod(key);
 
@@ -301,9 +301,9 @@
     }
 
 
-    /* =========================================================
-    API
-    ========================================================= */
+                                                                
+       
+                                                                
 
     async function readJson(response) {
         try {
@@ -313,8 +313,8 @@
         }
     }
 
-    // POST /api/report/calculate → { summary, timeline, historyTimeline, areaAnalytics }
-    // или { message: "Нет данных за выбранный период" }
+                                                                                         
+                                                        
     async function requestReport(start, end, params) {
         const response = await fetch(API.calculate, {
             method: "POST",
@@ -324,7 +324,7 @@
             },
             body: JSON.stringify({
                 start: `${start}T00:00:00`,
-                // Конец дня: сервер отклоняет End == Start, а DateOnly.FromDateTime всё равно берёт только дату
+                                                                                                                
                 end: `${end}T23:59:59`,
                 interval: params.interval,
                 section,
@@ -387,9 +387,9 @@
     }
 
 
-    /* =========================================================
-    ФОРМИРОВАНИЕ ОТЧЁТА
-    ========================================================= */
+                                                                
+                       
+                                                                
 
     let toastResetTimer;
 
@@ -470,8 +470,8 @@
         setLoading(true);
 
         try {
-            // Второй запрос — тот же период годом раньше: из него берём историю
-            // с минимумом/максимумом и сегментацию прошлого года
+                                                                                
+                                                                 
             const [currentData, previousData] = await Promise.all([
                 requestReport(params.start, params.end, params),
                 requestReport(params.previousStart, params.previousEnd, params)
@@ -518,9 +518,9 @@
     }
 
 
-    /* =========================================================
-    ОТРИСОВКА
-    ========================================================= */
+                                                                
+             
+                                                                
 
     function getPreviousTimeline() {
         const { current, previous } = state.report;
@@ -548,7 +548,7 @@
             <span>·</span>
             ${summary ? `Найдено: ${formatNumber(summary.totalAnnouncements)}` : escapeHtml(message || "Нет данных")}`;
 
-        // Сервер возвращает дельты 0, если за прошлый год данных нет — в этом случае показываем «—»
+                                                                                                    
         const hasHistory = (current?.historyTimeline || []).length > 0;
 
         const average = $("kpiAverage");
@@ -766,9 +766,9 @@
     }
 
 
-    /* =========================================================
-    ГРАФИК
-    ========================================================= */
+                                                                
+          
+                                                                
 
     const CHART_WIDTH = 1000;
     const CHART_HEIGHT = 360;
@@ -924,7 +924,7 @@
         $("chartPreviousLine").setAttribute("d", buildLine(previousPoints));
         $("chartAreaPath").setAttribute("d", buildArea(currentPoints));
 
-        // Ось Y: 5 подписей, выровненных по линиям сетки
+                                                         
         const useCompact = scale.max >= 1000000;
 
         $("chartValues").innerHTML = [0, 1, 2, 3, 4].map(step => {
@@ -933,7 +933,7 @@
             return `<span style="top: calc(14px + (100% - 54px) * ${step / 4})">${formatAxisValue(value, useCompact)}</span>`;
         }).join("");
 
-        // Ось X: не больше ~12 подписей
+                                        
         const multiYear = params.start.slice(0, 4) !== params.end.slice(0, 4);
         const labelStep = Math.ceil(points.length / 12);
 
@@ -1014,7 +1014,7 @@
 
         tooltip.hidden = false;
 
-        // Позиционирование: над точкой, у краёв графика — со сдвигом внутрь
+                                                                            
         const area = $("chartArea");
         const plotHeight = area.clientHeight - 54;
         const y = point.currentY ?? point.previousY ?? 0;
@@ -1058,9 +1058,9 @@
     }
 
 
-    /* =========================================================
-    ЭКСПОРТ
-    ========================================================= */
+                                                                
+           
+                                                                
 
     function csvCell(value) {
         if (value === null || value === undefined) return "";
@@ -1138,7 +1138,7 @@
             ...segmentRows(previous?.areaAnalytics)
         ];
 
-        // BOM + «;» — чтобы Excel сразу открыл файл с кириллицей и разбивкой по колонкам
+                                                                                         
         const csv = "﻿" + rows.map(row => row.map(csvCell).join(";")).join("\r\n");
         const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
         const link = document.createElement("a");
@@ -1155,9 +1155,9 @@
     }
 
 
-    /* =========================================================
-    СОБЫТИЯ
-    ========================================================= */
+                                                                
+           
+                                                                
 
     function clearQuickPeriod() {
         document

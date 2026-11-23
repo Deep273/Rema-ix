@@ -1,0 +1,25 @@
+@media (max-width: 900px) {
+  .land-catalog .filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .land-catalog :is(.intro, .list-toolbar, .object-title-row) {
+    flex-wrap: wrap;
+  }
+
+  .land-catalog .filter-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .land-catalog .range-fields {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .land-catalog .object-footer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

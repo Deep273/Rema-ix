@@ -20,7 +20,18 @@ const pool = new Pool({
   statement_timeout: 12000,
   options: '-c default_transaction_read_only=on'
 });
-pool.on('error', error => console.error('PostgreSQL:', error.message));
+function databaseErrorMessage(error) {
+  const messages = {
+    '28P01': 'Неверный пароль PostgreSQL. Перезапустите start.cmd и введите пароль пользователя базы данных.',
+    '28000': 'PostgreSQL отклонил подключение. Проверьте пользователя и правила доступа pg_hba.conf.',
+    '3D000': 'Указанная база PostgreSQL не существует. Проверьте PGDATABASE.',
+    '42501': 'У пользователя PostgreSQL недостаточно прав на чтение данных.',
+    'ECONNREFUSED': 'PostgreSQL не принимает подключение по указанному адресу и порту.',
+    'ETIMEDOUT': 'Истекло время ожидания подключения к PostgreSQL.'
+  };
+  return '[' + (error.code || 'UNKNOWN') + '] ' + (messages[error.code] || error.message);
+}
+pool.on('error', error => console.error('PostgreSQL:', databaseErrorMessage(error)));
 
 const query = `
   SELECT m.id_supply AS id, m.external_obj_id AS "externalId", m.title, m.description_text AS description,
@@ -239,7 +250,7 @@ const { listingPhotos } = require('./listing-photos.cjs');
 async function serveListingScreenshot(request, response, id) {
   if (!/^\d{1,100}$/.test(id)) return json(response, 400, null);
   const folder = path.join(mediaRoot, 'ru09', id.slice(-2).padStart(2, '0'));
-  // The parser saves a screenshot either inside a full media archive or as a standalone PNG.
+                                                                                             
   for (const file of [path.join(folder, id, 'screenshot.png'), path.join(folder, id + '.png')]) {
     try {
       const image = await fs.readFile(file);
@@ -249,7 +260,7 @@ async function serveListingScreenshot(request, response, id) {
       });
       return response.end(request.method === 'HEAD' ? undefined : image);
     } catch (error) {
-      // A missing parent directory on a Windows network share can report UNKNOWN.
+                                                                                  
       if (!['ENOENT', 'ENOTDIR'].includes(error.code) &&
           !(process.platform === 'win32' && error.code === 'UNKNOWN')) throw error;
     }
@@ -261,7 +272,7 @@ const { createAuth } = require('./auth.cjs');
 const { createStore } = require('./auth-store.cjs');
 const accountStore = createStore(process.env.LANDSCOPE_AUTH_DB || undefined);
 const auth = createAuth(accountStore, { json, body, secure: process.argv.includes('--behind-caddy') });
-const publicFiles = new Set(['/login.html', '/login.css', '/login.js']);
+const publicFiles = new Set(['/login.html', '/login.css', '/login.js', '/html/login.html', '/css/login.css', '/js/login.js']);
 
 const server = http.createServer(async (request, response) => {
   try {
@@ -296,25 +307,30 @@ const server = http.createServer(async (request, response) => {
       return json(response, 200, handler({ rows, active: rows.filter(row => row.active === true), form, type }));
     }
     if (!['GET', 'HEAD'].includes(request.method)) return json(response, 405, { message: 'Метод не поддерживается.' });
-    const target = path.resolve(root, '.' + decodeURIComponent(url.pathname.endsWith('/') ? url.pathname + 'index.html' : url.pathname));
+
+    const requestedPath = decodeURIComponent(url.pathname.endsWith('/') ? url.pathname + 'index.html' : url.pathname);
+    const folder = { '.html': 'html', '.css': 'css', '.js': 'js' }[path.extname(requestedPath)];
+    const staticPath = folder && !requestedPath.startsWith('/' + folder + '/')
+      ? '/' + folder + requestedPath : requestedPath;
+    const target = path.resolve(root, '.' + staticPath);
     const mime = contentTypes[path.extname(target)];
     if (!target.startsWith(root + path.sep) || !mime) return json(response, 404, { message: 'Страница не найдена.' });
     let file = await fs.readFile(target);
-    if (path.extname(target) === '.html' && url.pathname !== '/login.html') {
-      file = Buffer.from(file.toString('utf8').replace('</body>', '<script src="/account.js" defer></script></body>'));
+    if (path.extname(target) === '.html' && target !== path.join(root, 'html', 'login.html')) {
+      file = Buffer.from(file.toString('utf8').replace('</body>', '<script src="/js/account.js" defer></script></body>'));
     }
     response.writeHead(200, { 'Content-Type': mime + '; charset=utf-8', 'Cache-Control': 'no-store' });
     response.end(request.method === 'HEAD' ? undefined : file);
   } catch (error) {
     const status = error.status || (error.code === 'ENOENT' ? 404 : 503);
-    if (status === 503) console.error('Запрос:', error.message);
+    if (status === 503) console.error('Запрос:', databaseErrorMessage(error));
     json(response, status, { message: error.status ? error.message : status === 404 ?
-      'Страница не найдена.' : 'Не удалось загрузить данные PostgreSQL. Подробности в окне сервера.' });
+      'Страница не найдена.' : error.code === '28P01' ? 'Неверный пароль PostgreSQL. Перезапустите сервер и введите пароль базы данных.' : 'Не удалось загрузить данные PostgreSQL. Подробности в окне сервера.' });
   }
 });
 const behindCaddy = process.argv.includes('--behind-caddy');
 const port = Number(process.env.REALTY_PORT || (behindCaddy ? 5011 : 80));
-// Keep the existing router's HTTP forwarding working on the original server.
+                                                                             
 const exposeOnOriginalServer = onOriginalServer && !behindCaddy && !process.env.REALTY_HOST;
 const host = behindCaddy ? '127.0.0.1' : (process.env.REALTY_HOST || (exposeOnOriginalServer ? '0.0.0.0' : '127.0.0.1'));
 server.listen(port, host, () => {

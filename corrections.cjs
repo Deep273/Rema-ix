@@ -30,7 +30,7 @@ function changeRequests(update) {
 }
 
 async function handleCorrections(request, response, body, json) {
-  // Caddy connects over loopback and replaces X-Forwarded-Proto with the client scheme.
+                                                                                        
   const proxiedHttps = request.socket.remoteAddress === "127.0.0.1" &&
     request.headers["x-forwarded-proto"] === "https";
   const scheme = proxiedHttps ? "https" : "http";
