@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Вход · LandScope</title>
+  <link rel="stylesheet" href="/login.css?v=9">
+  <script src="/login.js?v=7" defer></script>
+</head>
+<body>
+  <main class="login-shell">
+    <section class="intro" aria-label="LandScope">
+      <a class="brand" href="/login.html"><span class="logo">L</span>LandScope</a>
+      <div class="intro-copy"><span class="eyebrow">База недвижимости</span><h1>Все объекты.<br>Один рабочий кабинет.</h1><p>Каталог, поиск и аналитика рынка недвижимости.</p></div>
+      <span class="intro-foot">Market intelligence</span>
+    </section>
+    <section class="login-panel">
+      <div class="auth-tabs" role="group" aria-label="Вход или регистрация"><button id="mode-login" type="button" aria-pressed="true">Вход</button><button id="mode-register" type="button" aria-pressed="false">Регистрация</button></div><div class="form-heading"><h2>Вход в аккаунт</h2><p>Введите логин и пароль для доступа к LandScope.</p></div>
+      <p id="login-error" role="alert" hidden></p><form id="login-form" novalidate>
+        <label for="username">Электронная почта</label>
+        <input id="username" aria-describedby="login-error" name="username" type="text" placeholder="name@example.com" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="100" required autofocus>
+        <label for="password">Пароль</label>
+        <div class="password-field"><input id="password" aria-describedby="login-error" name="password" type="password" placeholder="**********" autocomplete="current-password" maxlength="1024" required><button id="show-password" type="button" aria-pressed="false" aria-label="Показать пароль"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="m3 3 18 18"/></svg></button></div>
+        <div id="confirmation-field" hidden><label for="password-confirmation">Повторите пароль</label><div class="password-field"><input id="password-confirmation" aria-describedby="login-error" name="passwordConfirmation" type="password" placeholder="**********" autocomplete="new-password" maxlength="1024"><button id="show-confirmation" type="button" aria-pressed="false" aria-label="Показать повтор пароля"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="m3 3 18 18"/></svg></button></div></div><p id="password-hint" class="help" hidden>Введите почту. Пароль — минимум 10 символов.</p>
+        <button class="submit" type="submit">Войти</button>
+      </form>
+
+      <form id="verify-form" hidden>
+        <p id="verify-message" class="help"></p>
+        <label for="verification-code">Код из письма</label>
+        <input id="verification-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" placeholder="000000" required>
+        <button class="submit" type="submit">Подтвердить почту</button>
+        <button id="change-email" type="button" class="change-email">Изменить почту</button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

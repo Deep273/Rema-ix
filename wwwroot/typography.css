@@ -1,0 +1,66 @@
+/* Типографика LandScope по шкале коммерческого каталога */
+:root {
+  --ls-font: Inter, "Segoe UI", sans-serif;
+  --ls-text: 15px;
+  --ls-control: 14px;
+  --ls-muted: 13px;
+  --ls-heading: clamp(27px, 5vw, 58px);
+  --ls-section: 19px;
+  --ls-card: 18px;
+}
+
+body {
+  font: var(--ls-text)/1.5 var(--ls-font);
+}
+
+button, input, select, textarea, option, dialog {
+  font-family: var(--ls-font);
+}
+
+.catalog-hero h1,
+.land-catalog .intro h1,
+.market-report .hero h1,
+.analogs-hero h1,
+.review h1 {
+  font-size: var(--ls-heading);
+  line-height: 1.06;
+  letter-spacing: -.045em;
+}
+
+.land-catalog .intro p,
+.market-report .hero-content p,
+.analogs-hero p,
+.market-report :is(.builder-top, .section-heading, .data-card-header, .chart-header, .history-sector-header) p,
+.analogs-page :is(.section-heading, .results-header) p,
+.land-catalog .object-main > p,
+.analog-card p {
+  font-size: var(--ls-text);
+  line-height: 1.5;
+}
+
+#catalog-sidebar .sidebar-heading h2,
+.land-catalog .filter-heading h2,
+.market-report :is(.builder h2, .section-heading h2),
+.analogs-page h2 {
+  font-size: var(--ls-section);
+  line-height: 1.25;
+}
+
+.results .card h3,
+.land-catalog .object-title-row h3,
+.analogs-list .analog-card h3 {
+  font-size: var(--ls-card);
+  line-height: 1.25;
+}
+
+.land-catalog .object-meta,
+.analogs-list .analog-card .object-meta {
+  font-size: var(--ls-muted);
+}
+
+.catalog-hero .search input,
+.land-catalog :is(.field input, .field select, .toolbar-sort select),
+.market-report :is(.input-wrap input, .select-wrap select, .generate-button, .export-button),
+.analogs-page :is(.search-builder input, .search-builder select, .primary-search-button, .sort-block select) {
+  font-size: var(--ls-control);
+}

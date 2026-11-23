@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LandScope — Земельные участки</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link rel="stylesheet" href="style.css?v=20261007">
+    <link rel="stylesheet" href="land.css?v=6">
+  <link rel="stylesheet" href="/section-menu.css?v=13">
+  <script src="/section-menu.js?v=11" defer></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..900&amp;display=swap">
+  <link rel="stylesheet" href="/typography.css?v=1">
+</head>
+<body class="land-catalog">
+<header class="site-header">
+    <div class="header-inner">
+
+        <a href="land.html" class="brand">
+            <span class="brand-logo">L</span>
+            <span class="brand-copy">
+                <strong>LandScope</strong>
+                <small>Market intelligence</small>
+            </span>
+        </a>
+
+        <nav class="section-nav section-nav-actions" aria-label="Отчёты и аналоги">
+          <div class="section-tab">
+            <a class="section-action" href="/report/quarterly/?section=commercial">
+              Отчёт по рынку
+            </a>
+            <details>
+              <summary aria-label="Разделы: Отчёт по рынку">
+              </summary>
+              <div class="section-links">
+                <a data-section="commercial" href="/index.html">
+                  Коммерческая недвижимость
+                </a>
+                <a data-section="residential" href="/report/quarterly/?section=residential">
+                  Жилая недвижимость
+                </a>
+                <a data-section="land" href="/land.html">
+                  Земельные участки
+                </a>
+              </div>
+            </details>
+          </div>
+          <div class="section-tab">
+            <a class="section-action" href="/report/analogs/?section=commercial">
+              Подбор аналогов
+            </a>
+            <details>
+              <summary aria-label="Разделы: Подбор аналогов">
+              </summary>
+              <div class="section-links">
+                <a data-section="commercial" href="/index.html">
+                  Коммерческая недвижимость
+                </a>
+                <a data-section="residential" href="/report/analogs/?section=residential">
+                  Жилая недвижимость
+                </a>
+                <a data-section="land" href="/land.html">
+                  Земельные участки
+                </a>
+              </div>
+            </details>
+          </div>
+        </nav>
+
+        <div class="header-actions">
+            <button class="header-icon" id="themeButton" type="button">
+                ◐
+            </button>
+        </div>
+
+    </div>
+</header>
+
+<main class="page">
+    <section class="intro">
+        <div>
+            <div class="eyebrow">
+                <span></span>
+                БАЗА ОБЪЕКТОВ
+            </div>
+            <h1>Земельные участки</h1>
+            <p>
+                Объявления собираются автоматически с Авито, Циана и Tomsk.ru09.
+                Данные в базе: <strong id="totalCount">…</strong>.
+                Перед принятием решений проверяйте актуальность на источнике.
+            </p>
+        </div>
+        <div class="intro-actions">
+            <button class="secondary-button" id="refreshButton" type="button">
+                Обновить данные
+            </button>
+            <button class="primary-button" id="addSelectionButton" type="button">
+                Добавить выборку
+            </button>
+        </div>
+    </section>
+    <section class="filters">
+        <div class="filter-heading">
+            <div>
+                <span class="filter-label">ПАРАМЕТРЫ ПОИСКА</span>
+                <h2>Фильтрация объектов</h2>
+            </div>
+            <button id="resetFilters" class="reset-button" type="button">
+                Сбросить
+            </button>
+        </div>
+        <div class="filter-grid">
+            <label class="field">
+                <span>Район</span>
+                <select id="districtFilter">
+                    <option value="all">Все районы</option>
+                    <option>Асиновский район</option>
+                    <option>Бакчарский район</option>
+                    <option>Верхнекетский район</option>
+                    <option>Кожевниковский район</option>
+                    <option>Молчановский район</option>
+                    <option>Парабельский район</option>
+                    <option>Первомайский район</option>
+                    <option>Томск</option>
+                    <option>Томский район</option>
+                </select>
+            </label>
+            <label class="field">
+                <span>Категория земель</span>
+                <select id="categoryFilter">
+                    <option value="all">Все категории</option>
+                    <option>Земли населённых пунктов</option>
+                    <option>Земли сельхозназначения</option>
+                </select>
+            </label>
+            <label class="field">
+                <span>ВРИ</span>
+                <select id="vriFilter">
+                    <option value="all">Все ВРИ</option>
+                    <option>ИЖС</option>
+                    <option>ЛПХ</option>
+                    <option>Садоводство</option>
+                    <option>Фермерское хозяйство</option>
+                </select>
+            </label>
+            <label class="field">
+                <span>Площадь, соток</span>
+                <div class="range-fields">
+                    <input type="number" id="areaFrom" placeholder="От">
+                    <span>—</span>
+                    <input type="number" id="areaTo" placeholder="До">
+                </div>
+            </label>
+            <label class="field">
+                <span>Цена, руб.</span>
+                <div class="range-fields">
+                    <input type="number" id="priceFrom" placeholder="От">
+                    <span>—</span>
+                    <input type="number" id="priceTo" placeholder="До">
+                </div>
+            </label>
+            <button class="primary-button filter-button" id="applyFilters" type="button">
+                Найти объекты
+            </button>
+        </div>
+    </section>
+
+    <section class="list-section">
+        <div class="list-toolbar">
+
+    <div class="toolbar-result">
+        <span class="toolbar-dot"></span>
+        <span>Найденные объекты</span>
+    </div>
+
+    <div class="toolbar-side">
+
+        <div class="toolbar-count">
+            Показано
+            <strong id="paginationFrom">0</strong>–<strong id="paginationTo">0</strong>
+            из
+            <strong id="paginationTotal">0</strong>
+        </div>
+
+        <label class="toolbar-sort">
+            <span>Сортировка</span>
+
+            <select id="sortSelect">
+                <option value="newest">Сначала новые</option>
+                <option value="price-asc">Цена за сотку ▲</option>
+                <option value="price-desc">Цена за сотку ▼</option>
+                <option value="area-asc">Площадь ▲</option>
+                <option value="area-desc">Площадь ▼</option>
+            </select>
+        </label>
+
+    </div>
+
+</div>
+
+        <div class="list-status" id="listStatus">Загружаем объявления…</div>
+        <div class="objects-list" id="objectsList"></div>
+        <div class="pagination" id="pagination"></div>
+    </section>
+</main>
+<div class="toast" id="toast">
+    <span id="toastIcon">✓</span>
+    <div class="toast-copy">
+        <strong id="toastTitle">Готово</strong>
+        <span id="toastText"></span>
+    </div>
+</div>
+
+<script src="script.js?v=20261007"></script>
+</body>
+</html>

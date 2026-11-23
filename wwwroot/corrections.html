@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Заявки на исправление · LandScope</title>
+  <link rel="stylesheet" href="/catalog.css?v=14">
+  <link rel="stylesheet" href="/corrections.css">
+  <script src="/corrections.js" defer></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..900&amp;display=swap">
+  <link rel="stylesheet" href="/typography.css?v=1">
+</head>
+<body>
+  <main class="shell review">
+    <a href="/index.html">← К каталогу</a>
+    <h1>Заявки на исправление</h1>
+    <form id="review-login">
+      <label>
+        Ключ из окна сервера
+        <input name="token" type="password" autocomplete="off" required>
+      </label>
+      <button class="button primary">Открыть заявки</button>
+    </form>
+    <p id="review-status" role="status"></p>
+    <div id="requests"></div>
+  </main>
+</body>
+</html>

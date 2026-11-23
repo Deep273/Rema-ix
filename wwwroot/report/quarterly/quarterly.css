@@ -1,0 +1,589 @@
+.report-section {
+transition: opacity .2s ease;
+}
+
+.report-section.is-loading {
+opacity: .45;
+pointer-events: none;
+}
+
+.generate-button:disabled,
+.export-button:disabled {
+cursor: wait;
+opacity: .75;
+}
+
+/* KPI */
+
+.kpi-card > strong.red-value {
+color: var(--red);
+}
+
+.kpi-card > strong.compact-value {
+font-size: 32px;
+letter-spacing: -1px;
+}
+
+/* TABLES */
+
+.data-table tbody tr {
+cursor: pointer;
+}
+
+.data-table tbody tr.selected-row td {
+background: var(--blue-pale);
+}
+
+.data-table tr.table-empty {
+cursor: default;
+}
+
+.data-table tr.table-empty td {
+padding: 42px 25px;
+color: var(--text-light);
+text-align: center;
+white-space: normal;
+}
+
+.change.flat {
+color: var(--text-muted);
+background: #f2f4f7;
+}
+
+/* SEGMENTS */
+
+.report-section .segment-bottom strong.down {
+color: var(--red);
+}
+
+.report-section .segment-bottom strong.neutral {
+color: var(--text-light);
+}
+
+.segment-card.is-empty > strong {
+color: var(--text-light);
+}
+
+.history-sector-card.is-empty strong {
+color: var(--text-light);
+}
+
+.history-sector-empty {
+grid-column: 1 / -1;
+padding: 34px 20px;
+border: 1px dashed #ccd7e6;
+border-radius: 17px;
+color: var(--text-light);
+font-size: 15px;
+font-weight: 650;
+text-align: center;
+}
+
+/* CHART: ось Y и сетка выровнены по области SVG (14px сверху, 40px подписи снизу) */
+
+.dynamics-section .chart-values {
+position: relative;
+width: 64px;
+padding: 0;
+}
+
+.dynamics-section .chart-values span {
+position: absolute;
+right: 0;
+transform: translateY(-50%);
+white-space: nowrap;
+}
+
+.dynamics-section .grid-1 { top: 14px; }
+.dynamics-section .grid-2 { top: calc(14px + (100% - 54px) * .25); }
+.dynamics-section .grid-3 { top: calc(14px + (100% - 54px) * .5); }
+.dynamics-section .grid-4 { top: calc(14px + (100% - 54px) * .75); }
+.dynamics-section .grid-5 { top: calc(100% - 40px); bottom: auto; }
+
+.dynamics-section .chart-svg {
+top: 14px;
+height: calc(100% - 54px);
+}
+
+.dynamics-section .previous-line,
+.dynamics-section .current-line {
+vector-effect: non-scaling-stroke;
+stroke-linecap: round;
+stroke-linejoin: round;
+}
+
+.chart-dots {
+position: absolute;
+left: 0;
+right: 0;
+top: 14px;
+height: calc(100% - 54px);
+pointer-events: none;
+}
+
+.chart-dot {
+position: absolute;
+width: 10px;
+height: 10px;
+border: 3px solid var(--blue);
+border-radius: 50%;
+background: #fff;
+transform: translate(-50%, -50%);
+transition: width .15s ease, height .15s ease;
+}
+
+.chart-dot.previous {
+width: 8px;
+height: 8px;
+border-width: 2px;
+border-color: #cbd5e1;
+}
+
+.chart-dot.active {
+width: 16px;
+height: 16px;
+border-width: 4px;
+}
+
+.dynamics-section .chart-tooltip {
+right: auto;
+z-index: 2;
+pointer-events: none;
+white-space: nowrap;
+}
+
+.dynamics-section .chart-tooltip[hidden] {
+display: none;
+}
+
+.dynamics-section .chart-tooltip b.down {
+color: var(--red);
+}
+
+.dynamics-section .chart-tooltip b.neutral {
+color: var(--text-light);
+}
+
+.dynamics-section .chart-months {
+height: 20px;
+}
+
+.dynamics-section .chart-months span {
+position: absolute;
+top: 0;
+transform: translateX(-50%);
+white-space: nowrap;
+}
+
+.dynamics-section .chart-months span.first {
+transform: none;
+}
+
+.dynamics-section .chart-months span.last {
+transform: translateX(-100%);
+}
+
+.chart-empty {
+position: absolute;
+inset: 14px 0 40px;
+display: none;
+place-items: center;
+color: var(--text-light);
+font-size: 15px;
+font-weight: 650;
+}
+
+.chart-area.is-empty .chart-empty {
+display: grid;
+}
+
+/* TOAST */
+
+.toast-icon {
+width: 34px;
+height: 34px;
+flex: 0 0 34px;
+display: grid;
+place-items: center;
+border-radius: 50%;
+color: var(--green);
+background: var(--green-bg);
+font-size: 17px;
+font-weight: 900;
+}
+
+.toast.is-error .toast-icon {
+color: var(--red);
+background: var(--red-bg);
+}
+
+/* =========================================================
+   NAVIGATION — CURRENT SECTION
+========================================================= */
+
+.nav-dropdown-trigger.active {
+    position: relative;
+    border-color: #c6d9ff;
+    background: #f0f5ff;
+    color: #155eef;
+    box-shadow: 0 2px 8px rgba(21, 94, 239, .06);
+}
+
+.nav-current-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: #dce9ff;
+    color: #155eef;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .2px;
+    line-height: 1;
+}
+
+.nav-dropdown-link.active {
+    position: relative;
+    background: #edf4ff;
+    border: 1px solid #cfe0ff;
+    box-shadow: 0 3px 10px rgba(21, 94, 239, .05);
+}
+
+.nav-dropdown-link.active::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 10px;
+    bottom: 10px;
+    width: 3px;
+    border-radius: 0 4px 4px 0;
+    background: #155eef;
+}
+
+.nav-dropdown-link.active .nav-link-icon {
+    color: #fff;
+    background: linear-gradient(135deg, #155eef, #4285f4);
+}
+
+.nav-dropdown-link.active strong {
+    color: #155eef;
+}
+
+.nav-dropdown-link.active small {
+    color: #6683b5;
+}
+
+.nav-dropdown-link.active > span:last-child::after {
+    content: "ТЕКУЩИЙ РАЗДЕЛ";
+    display: inline-flex;
+    width: fit-content;
+    margin-top: 5px;
+    padding: 3px 6px;
+    border-radius: 5px;
+    background: #dce9ff;
+    color: #155eef;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .35px;
+}
+
+body.dark-theme .nav-dropdown-trigger.active {
+    border-color: #365b91;
+    background: rgba(41, 112, 255, .15);
+    color: #82adff;
+}
+
+body.dark-theme .nav-current-label {
+    color: #a9c8ff;
+    background: rgba(41, 112, 255, .22);
+}
+
+body.dark-theme .nav-dropdown-link.active {
+    border-color: #345687;
+    background: #1b2c46;
+}
+
+body.dark-theme .nav-dropdown-link.active strong {
+    color: #82adff;
+}
+
+body.dark-theme .nav-dropdown-link.active small {
+    color: #9bb2d4;
+}
+
+body.dark-theme .nav-dropdown-link.active > span:last-child::after {
+    color: #a9c8ff;
+    background: rgba(41, 112, 255, .2);
+}
+
+/* Визуальная тема рыночного отчёта */
+.market-report {
+  --report-panel: #fff;
+  --report-tint: #edf4ff;
+  --report-border: #cdddf5;
+  --report-ink: #14284d;
+  --report-accent: #1645b5;
+  --report-shadow: 0 8px 24px rgb(30 78 153 / 9%);
+  background: radial-gradient(ellipse at 85% 0, #dae9ff, transparent 680px), #eef4fc;
+}
+
+.market-report.dark-theme {
+  --report-panel: #172743;
+  --report-tint: #203656;
+  --report-border: #354c70;
+  --report-ink: #f0f6ff;
+  --report-accent: #bad6ff;
+  background: radial-gradient(ellipse at 85% 0, #203b65, transparent 680px), #101c31;
+}
+
+.market-report .hero {
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 26%);
+  gap: 16px;
+  margin-bottom: 18px;
+  padding: clamp(16px, 3.2vw, 40px);
+  border: 1px solid #4879d6;
+  border-radius: 26px;
+  background:
+    radial-gradient(ellipse at 92% 0, #2c70df, transparent 55%),
+    linear-gradient(122deg, #10264e, #173d86 70%, #225fca);
+  box-shadow: 0 16px 36px rgb(16 49 111 / 22%);
+}
+
+.market-report .hero-content {
+  min-height: 0;
+  padding: 4px 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.market-report .hero h1 {
+  margin: 12px 0;
+  font-size: clamp(30px, 5vw, 58px);
+  line-height: 1.06;
+  letter-spacing: -.045em;
+}
+
+.market-report .hero h1 span {
+  color: #b7d5ff;
+}
+
+.market-report .hero-content p {
+  color: #dceaff;
+  font-size: clamp(14px, 1.7vw, 17px);
+  line-height: 1.55;
+}
+
+.market-report :is(.builder, .database-card, .kpi-card, .data-card, .segment-card, .history-sector, .history-sector-card, .chart-card, .comparison-note) {
+  border: 1px solid var(--report-border);
+  border-radius: 17px;
+  background: var(--report-panel);
+  box-shadow: var(--report-shadow);
+}
+
+.market-report :is(.builder, .database-card, .kpi-card.featured, .featured-segment, .comparison-note) {
+  background: linear-gradient(145deg, var(--report-panel), var(--report-tint));
+}
+
+.market-report .database-card {
+  min-height: 0;
+  padding: clamp(15px, 2.2vw, 25px);
+}
+
+.market-report :is(.builder, .chart-card) {
+  padding: clamp(15px, 2.5vw, 28px);
+}
+
+.market-report .section-label {
+  color: var(--report-accent);
+}
+
+.market-report :is(.builder h2, .section-heading h2, .data-card-header h3, .chart-header h3, .history-sector-header h3) {
+  color: var(--report-ink);
+  letter-spacing: -.025em;
+}
+
+.market-report :is(.input-wrap input, .select-wrap select) {
+  height: 44px;
+  min-width: 0;
+  border-color: var(--report-border);
+  border-radius: 10px;
+  background-color: var(--report-panel);
+  color: var(--report-ink);
+  font-size: 14px;
+}
+
+.market-report .select-wrap select {
+  background-position: calc(100% - 17px) 19px, calc(100% - 11px) 19px;
+}
+
+.market-report :is(.generate-button, .export-button) {
+  min-height: 44px;
+  height: auto;
+  padding: 9px 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #326de9, #1b49bc);
+  color: #fff;
+}
+
+.market-report :is(.generate-button, .export-button):hover:not(:disabled) {
+  background: #1748ba;
+}
+
+.market-report :is(.quick-periods button, .data-count, .metric-badge, .chart-switcher) {
+  border: 1px solid var(--report-border);
+  background: var(--report-tint);
+  color: var(--report-accent);
+}
+
+.market-report :is(.quick-periods button, .chart-switcher button).active {
+  background: #235de2;
+  color: #fff;
+}
+
+.market-report .kpi-icon {
+  border-radius: 10px;
+  background: var(--report-tint);
+  color: var(--report-accent);
+}
+
+.market-report :is(.data-card-header, .data-table th) {
+  background: var(--report-tint);
+  color: var(--report-ink);
+}
+
+.market-report .data-table td {
+  border-color: var(--report-border);
+}
+
+.market-report .data-table tbody tr:hover td,
+.market-report .data-table tbody tr.selected-row td {
+  background: var(--report-tint);
+}
+
+.market-report :is(button, input, select):focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1050px) {
+  .market-report .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .market-report .generate-button {
+    grid-column: 1 / -1;
+  }
+
+  .market-report .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .market-report .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .market-report :is(.builder-top, .section-heading, .chart-header, .data-card-header, .history-sector-header) {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .market-report :is(.segment-grid, .history-sector-grid) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 430px) {
+  .market-report :is(.form-grid, .kpi-grid) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* График рыночного отчёта */
+.market-report .chart-card {
+  --series-current: #2563eb;
+  --series-previous: #7188af;
+  background: linear-gradient(155deg, var(--report-panel) 60%, var(--report-tint));
+}
+
+.market-report.dark-theme .chart-card {
+  --series-current: #79adff;
+  --series-previous: #a6b8d4;
+}
+
+.market-report .chart-header {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--report-border);
+}
+
+.market-report .chart-area {
+  background: linear-gradient(180deg, var(--report-tint), transparent 70%);
+  border-radius: 12px;
+}
+
+.market-report .chart-area .grid {
+  border: 0;
+  height: 1px;
+  background: var(--report-border);
+  opacity: .72;
+}
+
+.market-report .current-line,
+.market-report .previous-line {
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.market-report .current-line {
+  stroke: var(--series-current);
+  stroke-width: 3;
+}
+
+.market-report .previous-line {
+  stroke: var(--series-previous);
+  stroke-width: 2;
+  stroke-dasharray: 5 6;
+}
+
+.market-report .legend-current,
+.market-report .chart-dot:not(.previous) {
+  background: var(--series-current);
+}
+
+.market-report .legend-previous,
+.market-report .chart-dot.previous {
+  background: var(--series-previous);
+}
+
+.market-report .chart-dot,
+.market-report .chart-dot.previous {
+  border-color: var(--report-panel);
+  box-shadow: 0 0 0 1px var(--report-border);
+}
+
+.market-report .chart-dot.active {
+  box-shadow: 0 0 0 4px var(--report-border);
+}
+
+.market-report .chart-tooltip {
+  border: 1px solid var(--report-border);
+  border-radius: 12px;
+  background: var(--report-panel);
+  box-shadow: 0 12px 28px rgb(21 48 105 / 18%);
+}
+
+.market-report .chart-tooltip strong {
+  color: var(--report-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.market-report .kpi-grid .kpi-card {
+  border-top: 3px solid var(--report-border);
+}
+
+.market-report .kpi-grid .featured {
+  border-top-color: var(--blue);
+}

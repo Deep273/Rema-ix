@@ -1,0 +1,33 @@
+.review {
+  max-width: 800px;
+  padding-block: 32px;
+}
+
+.review h1 {
+  margin-block: 16px;
+}
+
+.review form,
+.review article {
+  margin-block: 12px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.review input {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.review article p {
+  margin-block: 8px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.review article button {
+  margin-inline-end: 8px;
+}

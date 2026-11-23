@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22a%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%2353b8ee%22%2F%3E%3Cstop%20offset%3D%22.55%22%20stop-color%3D%22%232865dc%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23173875%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2215%22%20fill%3D%22url%28%23a%29%22%2F%3E%3Cpath%20d%3D%22M19%2014h9v30h19v8H19z%22%20fill%3D%22white%22%2F%3E%3Cpath%20d%3D%22m36%2017%2012%207-12%207z%22%20fill%3D%22%23bceaff%22%2F%3E%3C%2Fsvg%3E">
+    <script>
+      if (location.protocol === "file:") {
+        location.replace("http://localhost/" + location.search + location.hash);
+      }
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      Коммерческая недвижимость · LandScope
+    </title>
+    <link rel="stylesheet" href="catalog.css?v=26">
+    <script src="jszip.min.js" defer>
+    </script>
+    <script src="catalog-export.js?v=2" defer>
+    </script>
+    <script src="catalog.js?v=64" defer>
+    </script>
+    <link rel="stylesheet" href="/section-menu.css?v=13">
+    <script src="/section-menu.js?v=11" defer>
+    </script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..900&amp;display=swap">
+  <link rel="stylesheet" href="/typography.css?v=1">
+  <link rel="stylesheet" href="/catalog-layout.css?v=56">
+</head>
+  <body>
+    <header class="header">
+      <div class="shell header-inner">
+        <a class="brand" href="index.html">
+          <span class="logo">
+            L
+          </span>
+          <span>
+            <strong>
+              LandScope
+            </strong>
+            <small>
+              Market intelligence
+            </small>
+          </span>
+        </a>
+        <nav class="section-nav section-nav-actions" aria-label="Отчёты и аналоги">
+          <div class="section-tab">
+            <a class="section-action" href="/report/quarterly/?section=commercial">
+              Отчёт по рынку
+            </a>
+            <details>
+              <summary aria-label="Разделы: Отчёт по рынку">
+              </summary>
+              <div class="section-links">
+                <a data-section="commercial" href="/index.html">
+                  Коммерческая недвижимость
+                </a>
+                <a data-section="residential" href="/report/quarterly/?section=residential">
+                  Жилая недвижимость
+                </a>
+                <a data-section="land" href="/land.html">
+                  Земельные участки
+                </a>
+              </div>
+            </details>
+          </div>
+          <div class="section-tab">
+            <a class="section-action" href="/report/analogs/?section=commercial">
+              Подбор аналогов
+            </a>
+            <details>
+              <summary aria-label="Разделы: Подбор аналогов">
+              </summary>
+              <div class="section-links">
+                <a data-section="commercial" href="/index.html">
+                  Коммерческая недвижимость
+                </a>
+                <a data-section="residential" href="/report/analogs/?section=residential">
+                  Жилая недвижимость
+                </a>
+                <a data-section="land" href="/land.html">
+                  Земельные участки
+                </a>
+              </div>
+            </details>
+          </div>
+        </nav>
+        <button
+          class="icon-button"
+          id="theme"
+          type="button"
+          aria-label="Переключить цветовую тему"
+          aria-pressed="false">
+          ◐
+        </button>
+      </div>
+    </header>
+    <main class="shell" id="commercial-section">
+        <div class="heading catalog-heading">
+          <div>
+            <div class="eyebrow">
+              База объектов
+            </div>
+            <h1>
+              Коммерческая недвижимость
+            </h1>
+          </div>
+        </div>
+      <div class="catalog">
+        <aside id="catalog-sidebar" class="sidebar" aria-label="Быстрые фильтры">
+          <section class="data-panel">
+            <h2>Какие данные показать</h2>
+            <label class="data-all"><input id="all-data-fields" type="checkbox"> Выбрать всё</label>
+            <div id="data-fields"></div>
+          </section>
+          <section class="filters-panel">
+          <div class="sidebar-heading">
+            <h2>
+              Фильтры
+            </h2>
+            <button class="text-button" id="reset" type="button">
+              Сбросить
+            </button>
+          </div>
+          <button class="button outline add-filter" type="button" data-open-filters>＋ Добавить фильтр</button>
+          <form id="quick">
+          </form>
+
+      <form id="location-filter" class="location-filter" aria-labelledby="location-title">
+        <div class="location-heading">
+          <h2 id="location-title">
+            Местоположение
+          </h2>
+          <p id="location-summary" aria-live="polite">
+          </p>
+        </div>
+        <div class="location-controls">
+          <label class="field">
+            <span>
+              Способ поиска
+            </span>
+            <select hidden name="mode">
+              <option value="area">
+                Регион и район
+              </option>
+              <option value="street">
+                По улице
+              </option>
+              <option value="radius">
+                По адресу и радиусу
+              </option>
+            </select>
+            <span class="location-modes" role="group" aria-label="Способ поиска">
+              <button type="button" data-location-choice="area" aria-pressed="true">Район</button>
+              <button type="button" data-location-choice="street" aria-pressed="false">Улица</button>
+              <button type="button" data-location-choice="radius" aria-pressed="false">Радиус</button>
+            </span>
+          </label>
+          <div class="field location-settlement" data-location-mode="area street radius">
+            <label for="location-settlement-input">Населённый пункт</label>
+            <input id="location-settlement-input" type="text" name="settlement" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="location-settlement-options" required>
+            <div class="location-suggestions" id="location-settlement-options" role="listbox" aria-label="Населённый пункт" hidden></div>
+          </div>
+          <div class="field location-district" data-location-mode="area">
+            <label for="location-district-input">Район</label>
+            <input id="location-district-input" type="text" name="district" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="location-district-options">
+            <div class="location-suggestions" id="location-district-options" role="listbox" aria-label="Район" hidden></div>
+          </div>
+          <div class="field" data-location-mode="street radius" hidden>
+            <label for="location-street-input">Улица</label>
+            <input id="location-street-input" type="text" name="street" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="location-street-options" placeholder="Например: Ачинская, 15">
+            <div class="location-suggestions" id="location-street-options" role="listbox" aria-label="Улица" hidden></div>
+          </div>
+          <label class="field" data-location-mode="radius" hidden>
+            <span>
+              Радиус, м
+            </span>
+            <input name="radius" type="number" min="1" step="any" placeholder="500" required>
+          </label>
+          <div class="location-map-field" data-location-mode="radius" hidden>
+            <a id="location-map" target="_blank" rel="noopener noreferrer" hidden>Открыть адрес на карте ↗</a>
+            <label class="field">
+              <span>Координаты центра</span>
+              <input type="text" name="coordinates" placeholder="Например: 56.4846, 84.9480" autocomplete="off">
+            </label>
+          </div>
+          <div class="location-actions">
+            <button class="button primary" type="submit">
+              Применить
+            </button>
+            <button class="text-button" id="clear-location" type="button">
+              Сбросить адрес
+            </button>
+          </div>
+        </div>
+        <p id="location-error" role="status"></p>
+        <p class="secondary" data-location-mode="radius" hidden>
+          Расстояние по прямой.
+        </p>
+      </form>
+          </section>
+        </aside>
+        <section class="results" aria-label="Результаты поиска">
+      <div class="catalog-hero">
+        <div class="catalog-workbench">
+          <section class="top-controls" aria-label="Основные параметры">
+            <div class="segments" id="operations" aria-label="Тип сделки">
+              <button type="button" data-operation="sale" aria-pressed="true">
+                Продажа
+              </button>
+              <button type="button" data-operation="rent" aria-pressed="false">
+                Аренда
+              </button>
+              <button type="button" data-operation="all" aria-pressed="false">Все сделки</button>
+            </div>
+            <form class="catalog-search-form" id="catalog-search-form" role="search">
+              <label class="search">
+                <span class="catalog-search-icon" aria-hidden="true">
+                </span>
+                <input
+                  id="search"
+                  type="search"
+                  placeholder="Найти по адресу или названию"
+                  aria-label="Найти по адресу или названию"
+                >
+              </label>
+              <button class="button primary catalog-search-submit" type="submit">
+                Найти
+              </button>
+            </form>
+          </section>
+        </div>
+        <h2 class="commercial-type-heading" id="commercial-type-heading" hidden>
+          Категории объектов
+        </h2>
+        <div class="categories" id="categories" aria-label="Типы объектов">
+        </div>
+      </div>
+
+          <div class="unit-stats" id="unit-stats" hidden>
+
+            <div>Минимум за м² <strong id="unit-min"></strong></div>
+            <div>Средняя за м² <strong id="unit-avg"></strong></div>
+            <div>Медиана за м² <strong id="unit-median"></strong></div>
+            <div>Максимум за м² <strong id="unit-max"></strong></div>
+          </div>
+          <div class="toolbar">
+            <strong id="count" aria-live="polite">
+            </strong>
+            <label class="select-results"><input id="select-results" type="checkbox"> Выбрать все</label>
+            <button
+              class="button outline mobile-filters"
+              type="button"
+              id="toggle-sidebar"
+              aria-controls="catalog-sidebar"
+              aria-expanded="false"
+            >
+              Фильтры
+            </button>
+            <label class="sort">
+              Сортировка
+              <select id="sort" aria-label="Сортировка">
+                <option value="new">
+                  Сначала новые
+                </option>
+                <option value="unitLow">Цена за м² ▲</option>
+                <option value="unitHigh">Цена за м² ▼</option>
+                <option value="low">
+                  Сначала дешевле
+                </option>
+                <option value="high">
+                  Сначала дороже
+                </option>
+                <option value="area">
+                  По площади ▼
+                </option>
+              </select>
+            </label>
+            <div class="export-control">
+              <button class="button outline" id="export-excel" type="button" aria-describedby="export-status">
+                Выгрузить Excel
+              </button>
+              <p id="export-status" role="status"></p>
+            </div>
+            <div class="views" id="views" aria-label="Вид выдачи">
+              <button type="button" data-view="list" aria-label="Список" title="Список" aria-pressed="true">
+                Список
+              </button>
+              <button type="button" data-view="grid" aria-label="Плитка" title="Плитка" aria-pressed="false">
+                Плитка
+              </button>
+            </div>
+          </div>
+          <div class="active-filters" id="active-filters">
+          </div>
+          <div id="cards" class="cards">
+          </div>
+          <nav id="catalog-pages" class="catalog-pages" aria-label="Страницы результатов" hidden>
+          </nav>
+    <dialog class="details-dialog" id="details-dialog" aria-labelledby="details-title">
+      <header class="dialog-header">
+        <h2 id="details-title">
+        </h2>
+        <button type="button" class="icon-button" data-close aria-label="Закрыть">
+          ×
+        </button>
+      </header>
+      <div id="details-body" class="details-body">
+      </div>
+      <div class="details-scroll-hint">
+        <button id="details-more" type="button" aria-label="Прокрутить подробности вниз" title="Прокрутить вниз" hidden>▼</button>
+      </div>
+    </dialog>
+        </section>
+      </div>
+    </main>
+    <main class="shell" id="other-section" hidden>
+      <div class="heading">
+        <div>
+          <div class="eyebrow">
+            База объектов / Томск
+          </div>
+          <h1 id="section-title">
+          </h1>
+        </div>
+      </div>
+      <div class="empty">
+        <strong id="empty-section-title">
+          Объявлений пока нет
+        </strong>
+        <p id="empty-section-message">
+          Данные для этого раздела ещё не подключены.
+        </p>
+      </div>
+    </main>
+    <dialog class="filter-dialog" id="filters-dialog" aria-labelledby="filters-title">
+      <header class="dialog-header">
+        <h2 id="filters-title">
+          Выбрать сведения
+        </h2>
+        <button type="button" class="icon-button" data-close aria-label="Закрыть">
+          ×
+        </button>
+      </header>
+      <form class="filter-layout" id="advanced">
+        <div class="filter-content">
+          <label class="search filter-search">
+            <span aria-hidden="true">
+              ⌕
+            </span>
+            <input id="filter-search" type="search" placeholder="Поиск по фильтрам" aria-label="Поиск по фильтрам">
+          </label>
+          <div id="advanced-fields">
+          </div>
+          <p id="no-filter" hidden>
+            Фильтры с таким названием не найдены.
+          </p>
+        </div>
+        <div class="filter-menu">
+          <div class="filter-actions">
+            <button class="button outline" id="select-all-fields" type="button">Выбрать всё</button>
+            <div class="filter-confirm-actions">
+              <button class="button outline" type="button" id="reset-draft">
+                Снять все галочки
+              </button>
+              <button class="button primary" type="submit" id="apply">
+                Готово
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
+  </body>
+</html>

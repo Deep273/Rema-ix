@@ -1,0 +1,286 @@
+/* Земельный каталог */
+.land-catalog {
+  --land-panel: #fff;
+  --land-tint: #edf4ff;
+  --land-border: #cdddf5;
+  --land-ink: #14284d;
+  --land-accent: #1645b5;
+  background: radial-gradient(ellipse at 85% 0, #dae9ff, transparent 680px), #eef4fc;
+}
+
+.land-catalog.dark-theme {
+  --land-panel: #172743;
+  --land-tint: #203656;
+  --land-border: #354c70;
+  --land-ink: #f0f6ff;
+  --land-accent: #bad6ff;
+  background: radial-gradient(ellipse at 85% 0, #203b65, transparent 680px), #101c31;
+}
+
+.land-catalog .intro {
+  gap: 20px;
+  padding: clamp(19px, 3.5vw, 44px);
+  border: 1px solid #4879d6;
+  border-radius: 24px;
+  background: radial-gradient(ellipse at 92% 0, #2c70df, transparent 55%),
+    linear-gradient(122deg, #10264e, #173d86 70%, #225fca);
+  box-shadow: 0 16px 36px rgb(16 49 111 / 22%);
+}
+
+.land-catalog .intro h1 {
+  color: #fff;
+  font-size: clamp(30px, 5vw, 55px);
+  letter-spacing: -.045em;
+}
+
+.land-catalog .intro :is(p, p strong, .eyebrow) {
+  color: #dceaff;
+}
+
+.land-catalog :is(.filters, .list-toolbar, .object-card) {
+  border: 1px solid var(--land-border);
+  border-radius: 17px;
+  background: var(--land-panel);
+  box-shadow: 0 8px 22px rgb(24 57 117 / 8%);
+}
+
+.land-catalog :is(.filters, .list-toolbar) {
+  background: linear-gradient(145deg, var(--land-panel), var(--land-tint));
+}
+
+.land-catalog .filters {
+  padding: clamp(15px, 2.5vw, 27px);
+}
+
+.land-catalog .filter-heading {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--land-border);
+}
+
+.land-catalog :is(.filter-heading h2, .object-title-row h3, .object-footer strong) {
+  color: var(--land-ink);
+}
+
+.land-catalog :is(.field input, .field select, .toolbar-sort select) {
+  min-width: 0;
+  border-color: var(--land-border);
+  border-radius: 10px;
+  background-color: var(--land-panel);
+  color: var(--land-ink);
+}
+
+.land-catalog .primary-button {
+  border-radius: 10px;
+  background: linear-gradient(135deg, #326de9, #1b49bc);
+  color: #fff;
+}
+
+.land-catalog .primary-button:hover:not(:disabled) {
+  background: #1748ba;
+}
+
+.land-catalog .reset-button {
+  padding: 7px 12px;
+  border: 1px solid var(--land-border);
+  border-radius: 9px;
+  background: var(--land-panel);
+  color: var(--land-accent);
+}
+
+.land-catalog .object-card {
+  display: block;
+  border-inline-start: 3px solid var(--blue);
+}
+
+.land-catalog .object-visual {
+  display: none;
+}
+
+.land-catalog .object-main {
+  row-gap: 0;
+  padding: clamp(14px, 2vw, 22px);
+}
+
+.land-catalog .object-tags span {
+  border-color: var(--land-border);
+  background: var(--land-tint);
+  color: var(--land-accent);
+}
+
+.land-catalog .object-footer {
+  border-color: var(--land-border);
+}
+
+@media (max-width: 900px) {
+  .land-catalog .filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .land-catalog :is(.intro, .list-toolbar, .object-title-row) {
+    flex-wrap: wrap;
+  }
+
+  .land-catalog .filter-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .land-catalog .range-fields {
+    min-width: 0;
+  }
+}
+
+/* Кнопка внешнего объявления */
+.land-catalog .object-footer a.object-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 38px;
+  padding: 6px 10px 6px 12px;
+  border: 1px solid #2d62d4;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #326de9, #1b49bc);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgb(27 73 188 / 18%);
+}
+
+.land-catalog .object-footer a.object-link::after {
+  display: grid;
+  place-items: center;
+  flex: 0 0 19px;
+  height: 19px;
+  border-radius: 6px;
+  background: rgb(255 255 255 / 17%);
+  content: "↗";
+}
+
+.land-catalog .object-footer a.object-link:hover {
+  background: #1748ba;
+  color: #fff;
+}
+
+.land-catalog .object-footer a.object-link:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+/* Карточки одной высоты и общий уровень нижних блоков */
+.land-catalog .objects-list {
+  align-items: stretch;
+}
+
+.land-catalog .object-card {
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+
+.land-catalog .object-card:hover {
+  transform: none;
+}
+
+.land-catalog .object-main {
+  flex: 1;
+}
+
+/* Выравнивание цены и источника */
+.land-catalog .object-main > p {
+  margin-bottom: 18px;
+}
+
+.land-catalog .object-tags:empty {
+  margin-bottom: 18px;
+}
+
+.land-catalog .object-footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 42%);
+  align-items: end;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.land-catalog .object-footer > div {
+  min-width: 0;
+}
+
+.land-catalog .object-footer strong {
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.land-catalog .object-footer :is(a.object-link, .object-link-muted) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  justify-self: end;
+  margin: 0;
+  white-space: normal;
+  text-align: center;
+}
+
+@media (max-width: 520px) {
+  .land-catalog .object-footer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Общие линии заголовка, метаданных, площади и описания в ряду */
+@supports (grid-template-rows: subgrid) {
+  .land-catalog .objects-list > .object-card {
+    display: grid;
+    grid-row: span 5;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+  }
+
+  .land-catalog .object-main,
+  .land-catalog .object-title-row,
+  .land-catalog .object-title-row > div {
+    display: grid;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+  }
+
+  .land-catalog .object-main {
+    grid-row: 1 / -1;
+  }
+
+  .land-catalog .object-title-row {
+    grid-row: 1 / 3;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .land-catalog .object-title-row > div {
+    grid-row: 1 / 3;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .land-catalog .object-status {
+    grid-area: 1 / 2;
+    align-self: start;
+  }
+
+  .land-catalog .object-tags {
+    grid-row: 3;
+    align-self: start;
+  }
+
+  .land-catalog .object-main > p {
+    grid-row: 4;
+  }
+
+  .land-catalog .object-footer {
+    grid-row: 5;
+    margin-top: 0;
+  }
+}

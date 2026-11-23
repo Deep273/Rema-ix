@@ -1,0 +1,12 @@
+{
+	default_sni {$REALTY_PUBLIC_HOST:90.188.118.197}
+}
+
+https://{$REALTY_PUBLIC_HOST:90.188.118.197} {
+	tls {
+		issuer acme {
+			profile shortlived
+		}
+	}
+	reverse_proxy 127.0.0.1:{$REALTY_PORT:5011}
+}
