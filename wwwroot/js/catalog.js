@@ -6,7 +6,7 @@ const types = {
   retail: "Торговые",
   warehouse: "Склады",
   industrial: "Производственные",
-  flexible: "Свободное назначение"
+  flexible: "Свободное назначение",
 };
 const commercialTypes = {
   nonresidential: "Нежилое",
@@ -17,20 +17,34 @@ const commercialTypes = {
   industrial: "Производство",
   business: "Бизнес",
   garage: "Гараж",
-  hall: "Залы"
+  hall: "Залы",
 };
 
 const ru09Conditions = [
-  "Черновая отделка", "Требуется ремонт", "В хорошем состоянии", "В отличном состоянии"
+  "Черновая отделка",
+  "Требуется ремонт",
+  "В хорошем состоянии",
+  "В отличном состоянии",
 ];
 
 const ru09Districts = [
-  "Кировский", "Советский", "Ленинский", "Октябрьский", "Северск",
-  "Томский", "Асиновский", "Область", "Другое"
+  "Кировский",
+  "Советский",
+  "Ленинский",
+  "Октябрьский",
+  "Северск",
+  "Томский",
+  "Асиновский",
+  "Область",
+  "Другое",
 ];
 
 function lookupText(value) {
-  return String(value ?? "").trim().toLocaleLowerCase("ru").replaceAll("ё", "е").replace(/\s+/g, " ");
+  return String(value ?? "")
+    .trim()
+    .toLocaleLowerCase("ru")
+    .replaceAll("ё", "е")
+    .replace(/\s+/g, " ");
 }
 
 function commercialCategory(value) {
@@ -61,10 +75,11 @@ function commercialDistrict({ district, settlement, region }) {
   const town = lookupText(settlement);
   const place = area + " " + town;
   if (/северск/.test(place)) return "Северск";
-  const known = ru09Districts.find(name => area.includes(lookupText(name)));
+  const known = ru09Districts.find((name) => area.includes(lookupText(name)));
   if (known) return known;
   if (/асино/.test(town)) return "Асиновский";
-  if (/томская область/.test(lookupText(region)) && (area || town) && !/(?:^| )томск$/.test(town)) return "Область";
+  if (/томская область/.test(lookupText(region)) && (area || town) && !/(?:^| )томск$/.test(town))
+    return "Область";
   return area || town ? "Другое" : null;
 }
 
@@ -74,8 +89,11 @@ const conditions = [];
 let listings = [];
 let loadError = "";
 const categoryKeys = new Map([
-  ["нежилое", "nonresidential"], ["офис", "office"], ["торговое", "retail"], ["склад", "warehouse"],
-  ["производство", "industrial"]
+  ["нежилое", "nonresidential"],
+  ["офис", "office"],
+  ["торговое", "retail"],
+  ["склад", "warehouse"],
+  ["производство", "industrial"],
 ]);
 
 for (const [key, label] of Object.entries(commercialTypes)) {
@@ -89,16 +107,20 @@ const groups = [
     id: "main",
     title: "Основные",
     fields: [
-      ["price", "Цена, ₽", 0], ["area", "Площадь, м²", 0], ["unit", "Цена за м², ₽", 0]
-    ]
+      ["price", "Цена, ₽", 0],
+      ["area", "Площадь, м²", 0],
+      ["unit", "Цена за м², ₽", 0],
+    ],
   },
   {
     id: "building",
     title: "Характеристики",
     fields: [
-      ["floor", "Этаж", -10], ["floors", "Этажность", null], ["condition", "Отделка", conditions]
-    ]
-  }
+      ["floor", "Этаж", -10],
+      ["floors", "Этажность", null],
+      ["condition", "Отделка", conditions],
+    ],
+  },
 ];
 const basicFields = groups[0].fields;
 const extraFields = groups[1].fields;
@@ -109,7 +131,7 @@ const dataGroups = [
   ["address", "Адрес", ["region", "district", "settlement", "street", "house"]],
   ["floor", "Этаж / этажность", ["floorSummary"]],
   ["condition", "Отделка", ["condition"]],
-  ["source", "Источник и дата", ["source", "published", "link"]]
+  ["source", "Источник и дата", ["source", "published", "link"]],
 ];
 const selectedFields = new Set(dataGroups.map(([id]) => id));
 const selectedListings = new Set();
@@ -117,7 +139,8 @@ const sourceOptions = [];
 fields.push(["source", "Источник", sourceOptions], ["published", "Дата публикации", "date"]);
 
 const enabledFilters = new Set();
-const filterKeys = ([key, , options]) => Array.isArray(options) ? [key] : [key + "From", key + "To"];
+const filterKeys = ([key, , options]) =>
+  Array.isArray(options) ? [key] : [key + "From", key + "To"];
 const state = {
   page: 1,
   operation: "sale",
@@ -126,30 +149,36 @@ const state = {
   view: "list",
   query: "",
   filters: {},
-  location: {}
+  location: {},
 };
-const $ = id => document.getElementById(id);
+const $ = (id) => document.getElementById(id);
 const format = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 2 });
 const integer = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 });
-const money = (value, operation = state.operation) => integer.format(value) + " ₽" + (operation === "rent" ? "/мес." : "");
-const perSquare = (value, operation = state.operation) => integer.format(value) + " ₽/м²" + (operation === "rent" ? "/мес." : "");
-const fieldLabel = (key, label) => state.operation === "rent" && ["price", "unit"].includes(key) ? label + "/мес." : label;
-const textMatch = (value, query) => value.toLocaleLowerCase("ru").replaceAll("ё", "е")
-  .includes(query.trim().toLocaleLowerCase("ru").replaceAll("ё", "е"));
+const money = (value, operation = state.operation) =>
+  integer.format(value) + " ₽" + (operation === "rent" ? "/мес." : "");
+const perSquare = (value, operation = state.operation) =>
+  integer.format(value) + " ₽/м²" + (operation === "rent" ? "/мес." : "");
+const fieldLabel = (key, label) =>
+  state.operation === "rent" && ["price", "unit"].includes(key) ? label + "/мес." : label;
+const textMatch = (value, query) =>
+  value
+    .toLocaleLowerCase("ru")
+    .replaceAll("ё", "е")
+    .includes(query.trim().toLocaleLowerCase("ru").replaceAll("ё", "е"));
 
-const multiChoice = new Map([
-  ["condition", "Любая отделка"]
-]);
+const multiChoice = new Map([["condition", "Любая отделка"]]);
 
 function updateMultiChoice(form) {
   for (const picker of form.querySelectorAll(".filter-multi")) {
     const count = picker.querySelectorAll("input:checked").length;
-    picker.querySelector("summary span").textContent = count > 1 ? "Выбрано: " + count :
-      picker.querySelector("input:checked")?.value || multiChoice.get(picker.dataset.filterKey);
+    picker.querySelector("summary span").textContent =
+      count > 1
+        ? "Выбрано: " + count
+        : picker.querySelector("input:checked")?.value || multiChoice.get(picker.dataset.filterKey);
   }
 }
 
-$("quick").addEventListener("keydown", event => {
+$("quick").addEventListener("keydown", (event) => {
   const picker = event.target.closest(".filter-multi[open]");
   if (event.key !== "Escape" || !picker) return;
   event.preventDefault();
@@ -157,7 +186,7 @@ $("quick").addEventListener("keydown", event => {
   picker.querySelector("summary").focus();
 });
 
-document.addEventListener("click", event => {
+document.addEventListener("click", (event) => {
   for (const other of $("quick").querySelectorAll(".filter-multi[open]")) {
     if (!other.contains(event.target)) other.open = false;
   }
@@ -167,32 +196,99 @@ function fieldMarkup([key, rawLabel, options]) {
   const label = fieldLabel(key, rawLabel);
   if (multiChoice.has(key)) {
     const placeholder = multiChoice.get(key);
-    return '<div class="field"><span>' + escapeHtml(label) + '</span>' +
-      '<details class="filter-multi" data-filter-key="' + key + '"><summary>' +
-      '<span>' + placeholder + '</span></summary><div class="filter-multi-options">' +
-      (options.length ? options.map(option =>
-        '<label><input type="checkbox" name="' + key + '" value="' + escapeHtml(option) +
-        '"><span>' + escapeHtml(option) + '</span></label>'
-      ).join("") : '<span>Нет значений в выдаче</span>') + '</div></details></div>';
+    return (
+      '<div class="field"><span>' +
+      escapeHtml(label) +
+      "</span>" +
+      '<details class="filter-multi" data-filter-key="' +
+      key +
+      '"><summary>' +
+      "<span>" +
+      placeholder +
+      '</span></summary><div class="filter-multi-options">' +
+      (options.length
+        ? options
+            .map(
+              (option) =>
+                '<label><input type="checkbox" name="' +
+                key +
+                '" value="' +
+                escapeHtml(option) +
+                '"><span>' +
+                escapeHtml(option) +
+                "</span></label>",
+            )
+            .join("")
+        : "<span>Нет значений в выдаче</span>") +
+      "</div></details></div>"
+    );
   }
   if (Array.isArray(options)) {
     const placeholder = options.length ? "Любой вариант" : "Нет значений в выдаче";
-    return '<label class="field" data-field="' + key + '"><span>' + label +
-      '</span><select name="' + key + '"><option value="">' + placeholder + '</option>' +
-      options.map(option => '<option>' + escapeHtml(option) + '</option>').join("") + '</select></label>';
+    return (
+      '<label class="field" data-field="' +
+      key +
+      '"><span>' +
+      label +
+      '</span><select name="' +
+      key +
+      '"><option value="">' +
+      placeholder +
+      "</option>" +
+      options.map((option) => "<option>" + escapeHtml(option) + "</option>").join("") +
+      "</select></label>"
+    );
   }
   if (options === "date") {
-    return '<div class="field"><span>Дата публикации</span><div class="range">' +
+    return (
+      '<div class="field"><span>Дата публикации</span><div class="range">' +
       '<input type="date" name="publishedFrom" aria-label="Дата публикации от">' +
-      '<input type="date" name="publishedTo" aria-label="Дата публикации до"></div></div>';
+      '<input type="date" name="publishedTo" aria-label="Дата публикации до"></div></div>'
+    );
   }
   const step = ["area", "price", "unit"].includes(key) ? "any" : "1";
-  return '<div class="field" data-field="' + key + '"><span data-label="' + key + '">' + label + '</span><div class="range">' +
-    [["From", "От"], ["To", "До"]].map(([suffix, placeholder]) =>
-      '<span class="number-control"><input type="number" name="' + key + suffix + '" min="' + options + '" step="' + step + '" placeholder="' + placeholder +
-      '" aria-label="' + label + ' — ' + placeholder.toLowerCase() + '"><span class="number-arrows">' +
-      '<button type="button" data-number-step="1" aria-label="Увеличить: ' + label + ' — ' + placeholder.toLowerCase() + '">▴</button>' +
-      '<button type="button" data-number-step="-1" aria-label="Уменьшить: ' + label + ' — ' + placeholder.toLowerCase() + '">▾</button></span></span>').join("") + '</div></div>';
+  return (
+    '<div class="field" data-field="' +
+    key +
+    '"><span data-label="' +
+    key +
+    '">' +
+    label +
+    '</span><div class="range">' +
+    [
+      ["From", "От"],
+      ["To", "До"],
+    ]
+      .map(
+        ([suffix, placeholder]) =>
+          '<span class="number-control"><input type="number" name="' +
+          key +
+          suffix +
+          '" min="' +
+          options +
+          '" step="' +
+          step +
+          '" placeholder="' +
+          placeholder +
+          '" aria-label="' +
+          label +
+          " — " +
+          placeholder.toLowerCase() +
+          '"><span class="number-arrows">' +
+          '<button type="button" data-number-step="1" aria-label="Увеличить: ' +
+          label +
+          " — " +
+          placeholder.toLowerCase() +
+          '">▴</button>' +
+          '<button type="button" data-number-step="-1" aria-label="Уменьшить: ' +
+          label +
+          " — " +
+          placeholder.toLowerCase() +
+          '">▾</button></span></span>',
+      )
+      .join("") +
+    "</div></div>"
+  );
 }
 
 function read(form) {
@@ -213,34 +309,61 @@ function fill(form, values) {
 function validate(form, report = false) {
   for (const input of form.querySelectorAll("input[name$='To']")) {
     const from = form.elements.namedItem(input.name.replace(/To$/, "From"));
-    const inverted = from.value !== "" && input.value !== "" && (input.type === "date" ? from.value > input.value : Number(from.value) > Number(input.value));
+    const inverted =
+      from.value !== "" &&
+      input.value !== "" &&
+      (input.type === "date" ? from.value > input.value : Number(from.value) > Number(input.value));
     input.setCustomValidity(inverted ? "Верхняя граница должна быть не меньше нижней." : "");
   }
   return report ? form.reportValidity() : form.checkValidity();
 }
 function filtered(filters, type = section === "commercial" ? null : state.type) {
-  return listings.filter(item => (state.operation === "all" || item.operation === state.operation) &&
-    (type === null ? checkedTypes.size === 0 || checkedTypes.has(item.type) :
-      type === "all" || item.type === type) &&
-    matchesLocation(item, state.location) &&
-    textMatch(item.title + " " + item.address + " " + item.district, state.query) &&
-    fields.every(([key, , options]) => {
-      if (Array.isArray(options)) {
-        const value = key === "condition" && section === "commercial" ? item.conditionGroup : item[key];
-        const selected = filters[key];
-        return !selected || (Array.isArray(selected) ? selected.includes(value) : value === selected);
-      }
-      const min = filters[key + "From"];
-      const max = filters[key + "To"];
-      if (options === "date") return (!min && !max) || Boolean(item.published && (!min || item.published >= min) && (!max || item.published <= max));
-      const value = key === "unit" && item.unit != null ? item.unit : item[key];
-      if (min === undefined && max === undefined) return true;
-      return value != null && (min === undefined || value >= Number(min)) && (max === undefined || value <= Number(max));
-    }));
+  return listings.filter(
+    (item) =>
+      (state.operation === "all" || item.operation === state.operation) &&
+      (type === null
+        ? checkedTypes.size === 0 || checkedTypes.has(item.type)
+        : type === "all" || item.type === type) &&
+      matchesLocation(item, state.location) &&
+      textMatch(item.title + " " + item.address + " " + item.district, state.query) &&
+      fields.every(([key, , options]) => {
+        if (Array.isArray(options)) {
+          const value =
+            key === "condition" && section === "commercial" ? item.conditionGroup : item[key];
+          const selected = filters[key];
+          return (
+            !selected || (Array.isArray(selected) ? selected.includes(value) : value === selected)
+          );
+        }
+        const min = filters[key + "From"];
+        const max = filters[key + "To"];
+        if (options === "date")
+          return (
+            (!min && !max) ||
+            Boolean(
+              item.published && (!min || item.published >= min) && (!max || item.published <= max),
+            )
+          );
+        const value = key === "unit" && item.unit != null ? item.unit : item[key];
+        if (min === undefined && max === undefined) return true;
+        return (
+          value != null &&
+          (min === undefined || value >= Number(min)) &&
+          (max === undefined || value <= Number(max))
+        );
+      }),
+  );
 }
 function countLabel(n) {
   const last = n % 10;
-  const noun = n % 100 >= 11 && n % 100 <= 14 ? "объектов" : last === 1 ? "объект" : last >= 2 && last <= 4 ? "объекта" : "объектов";
+  const noun =
+    n % 100 >= 11 && n % 100 <= 14
+      ? "объектов"
+      : last === 1
+        ? "объект"
+        : last >= 2 && last <= 4
+          ? "объекта"
+          : "объектов";
   return format.format(n) + " " + noun;
 }
 function escapeHtml(value) {
@@ -249,9 +372,9 @@ function escapeHtml(value) {
     "<": "&lt;",
     ">": "&gt;",
     '"': "&quot;",
-    "'": "&#39;"
+    "'": "&#39;",
   };
-  return String(value).replace(/[&<>"']/g, char => chars[char]);
+  return String(value).replace(/[&<>"']/g, (char) => chars[char]);
 }
 function screenshotLink(item) {
   try {
@@ -267,14 +390,18 @@ function sourceLink(item) {
   try {
     const url = new URL(item.link);
     if (!["https:", "http:"].includes(url.protocol)) return "";
-    return '<a class="button outline source-link" href="' + escapeHtml(url.href) +
-      '" target="_blank" rel="noopener noreferrer">На объявление ↗</a>';
+    return (
+      '<a class="button outline source-link" href="' +
+      escapeHtml(url.href) +
+      '" target="_blank" rel="noopener noreferrer">На объявление ↗</a>'
+    );
   } catch {
     return "";
   }
 }
 const dates = new Intl.DateTimeFormat("ru-RU", { dateStyle: "medium", timeZone: "Asia/Tomsk" });
-const dateText = value => value && Number.isFinite(Date.parse(value)) ? dates.format(new Date(value)) : null;
+const dateText = (value) =>
+  value && Number.isFinite(Date.parse(value)) ? dates.format(new Date(value)) : null;
 
 const photoRequests = new Map();
 
@@ -282,7 +409,11 @@ function sourcePhotoId(link) {
   try {
     const url = new URL(link);
     const id = url.searchParams.get("id");
-    return ["www.tomsk.ru09.ru", "tomsk.ru09.ru"].includes(url.hostname) && /^\/realty\/?$/.test(url.pathname) && /^\d{1,12}$/.test(id) ? id : null;
+    return ["www.tomsk.ru09.ru", "tomsk.ru09.ru"].includes(url.hostname) &&
+      /^\/realty\/?$/.test(url.pathname) &&
+      /^\d{1,12}$/.test(id)
+      ? id
+      : null;
   } catch {
     return null;
   }
@@ -297,7 +428,7 @@ function loadListingPhotos(item) {
   if (!id || photoUrls(item).length >= 10) return Promise.resolve();
   if (!photoRequests.has(id)) {
     const request = fetch("/api/listing-photos?id=" + id + "&limit=10", { cache: "no-store" })
-      .then(response => {
+      .then((response) => {
         if (!response.ok) throw Error("Фото недоступны");
         return response.json();
       })
@@ -307,7 +438,7 @@ function loadListingPhotos(item) {
       });
     photoRequests.set(id, request);
   }
-  return photoRequests.get(id).then(photos => {
+  return photoRequests.get(id).then((photos) => {
     if (photos.length) {
       const unique = new Map();
       for (const url of [...photos, ...photoUrls(item)]) {
@@ -319,23 +450,29 @@ function loadListingPhotos(item) {
   });
 }
 
-const photoObserver = new IntersectionObserver(entries => {
-  for (const entry of entries) {
-    if (!entry.isIntersecting) continue;
-    const card = entry.target;
-    photoObserver.unobserve(card);
-    const item = listings.find(row => row.id === card.dataset.photoListing);
-    if (!item) continue;
-    loadListingPhotos(item).then(() => {
-      const photo = photoUrls(item)[0];
-      if (photo && card.isConnected && !card.querySelector(".card-photo")) {
-        const placeholder = card.querySelector(".card-photo-placeholder");
-        if (placeholder) placeholder.outerHTML = coverMarkup(item, photo);
-        else card.querySelector(".card-info").insertAdjacentHTML("afterbegin", coverMarkup(item, photo));
-      }
-    });
-  }
-}, { rootMargin: "120px" });
+const photoObserver = new IntersectionObserver(
+  (entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      const card = entry.target;
+      photoObserver.unobserve(card);
+      const item = listings.find((row) => row.id === card.dataset.photoListing);
+      if (!item) continue;
+      loadListingPhotos(item).then(() => {
+        const photo = photoUrls(item)[0];
+        if (photo && card.isConnected && !card.querySelector(".card-photo")) {
+          const placeholder = card.querySelector(".card-photo-placeholder");
+          if (placeholder) placeholder.outerHTML = coverMarkup(item, photo);
+          else
+            card
+              .querySelector(".card-info")
+              .insertAdjacentHTML("afterbegin", coverMarkup(item, photo));
+        }
+      });
+    }
+  },
+  { rootMargin: "120px" },
+);
 
 function photoPlaceholder() {
   return '<div class="card-photo-placeholder"><span aria-hidden="true">▧</span>Нет фото</div>';
@@ -343,24 +480,46 @@ function photoPlaceholder() {
 
 function fullSizePhoto(source) {
   const url = new URL(source);
-  if (["www.tomsk.ru09.ru", "tomsk.ru09.ru"].includes(url.hostname) &&
-      /^\/img\/tomsk\/realty\/\d+\/\d+\/\d+\/thumb_/i.test(url.pathname)) {
+  if (
+    ["www.tomsk.ru09.ru", "tomsk.ru09.ru"].includes(url.hostname) &&
+    /^\/img\/tomsk\/realty\/\d+\/\d+\/\d+\/thumb_/i.test(url.pathname)
+  ) {
     url.pathname = url.pathname.replace(/\/thumb_/i, "/");
   }
   return url.href;
 }
 
 function coverMarkup(item, photo) {
-  return '<button class="card-photo" type="button" data-details="' + escapeHtml(item.id) +
-    '" aria-label="Открыть фотографии: ' + escapeHtml(item.title) + '">' + photoMarkup(photo, true) + '</button>';
+  return (
+    '<button class="card-photo" type="button" data-details="' +
+    escapeHtml(item.id) +
+    '" aria-label="Открыть фотографии: ' +
+    escapeHtml(item.title) +
+    '">' +
+    photoMarkup(photo, true) +
+    "</button>"
+  );
 }
 
 function galleryMarkup(photos) {
-  const thumbs = photos.map((url, index) =>
-    '<button type="button" data-photo-index="' + index + '" data-url="' + escapeHtml(url) +
-    '" aria-label="Фото ' + (index + 1) + '" aria-pressed="' + (index === 0) + '">' + photoMarkup(url) + '</button>'
-  ).join("");
-  return '<section class="detail-photos photo-viewer" aria-label="Фотографии объекта">' +
+  const thumbs = photos
+    .map(
+      (url, index) =>
+        '<button type="button" data-photo-index="' +
+        index +
+        '" data-url="' +
+        escapeHtml(url) +
+        '" aria-label="Фото ' +
+        (index + 1) +
+        '" aria-pressed="' +
+        (index === 0) +
+        '">' +
+        photoMarkup(url) +
+        "</button>",
+    )
+    .join("");
+  return (
+    '<section class="detail-photos photo-viewer" aria-label="Фотографии объекта">' +
     '<div class="photo-frame"><div class="photo-pan" tabindex="0" aria-label="Область фотографии">' +
     '<img class="photo-main" alt="" draggable="false" referrerpolicy="no-referrer"></div>' +
     '<button class="photo-prev" type="button" data-photo-action="prev" aria-label="Предыдущее фото">‹</button>' +
@@ -371,15 +530,23 @@ function galleryMarkup(photos) {
     '<button type="button" data-photo-action="reset" aria-label="Сбросить масштаб">100%</button>' +
     '<button type="button" data-photo-action="in" aria-label="Увеличить">+</button>' +
     '<button type="button" data-photo-action="expand" aria-pressed="false">На весь экран</button></div>' +
-    '<div class="photo-thumbs" aria-label="Миниатюры">' + thumbs + '</div></section>';
+    '<div class="photo-thumbs" aria-label="Миниатюры">' +
+    thumbs +
+    "</div></section>"
+  );
 }
 
 const detailsScrollDialog = $("details-dialog");
 const detailsMore = $("details-more");
 
 function updateDetailsScrollHint() {
-  const remaining = detailsScrollDialog.scrollHeight - detailsScrollDialog.clientHeight - detailsScrollDialog.scrollTop;
-  detailsMore.hidden = !detailsScrollDialog.open || remaining <= 2 ||
+  const remaining =
+    detailsScrollDialog.scrollHeight -
+    detailsScrollDialog.clientHeight -
+    detailsScrollDialog.scrollTop;
+  detailsMore.hidden =
+    !detailsScrollDialog.open ||
+    remaining <= 2 ||
     Boolean(detailsScrollDialog.querySelector(".photo-viewer.is-expanded"));
 }
 
@@ -391,8 +558,8 @@ detailsResize.observe($("details-body"));
 
 detailsMore.addEventListener("click", () => {
   detailsScrollDialog.scrollBy({
-    top: Math.max(100, detailsScrollDialog.clientHeight * .72),
-    behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth"
+    top: Math.max(100, detailsScrollDialog.clientHeight * 0.72),
+    behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
   });
 });
 
@@ -411,8 +578,8 @@ function setupGallery(viewer) {
     pan.classList.toggle("is-zoomed", zoom > 1);
     const centerX = (pan.scrollLeft + x) / Math.max(pan.scrollWidth, 1);
     const centerY = (pan.scrollTop + y) / Math.max(pan.scrollHeight, 1);
-    image.style.width = (zoom * 100) + "%";
-    image.style.height = (zoom * 100) + "%";
+    image.style.width = zoom * 100 + "%";
+    image.style.height = zoom * 100 + "%";
     pan.scrollLeft = centerX * pan.scrollWidth - x;
     pan.scrollTop = centerY * pan.scrollHeight - y;
     viewer.querySelector('[data-photo-action="reset"]').textContent = Math.round(zoom * 100) + "%";
@@ -430,16 +597,24 @@ function setupGallery(viewer) {
     expandButton.focus({ preventScroll: true });
   }
 
-  pan.addEventListener("wheel", event => {
-    if (!event.deltaY || event.ctrlKey || event.metaKey) return;
-    event.preventDefault();
-    const rect = pan.getBoundingClientRect();
-    const step = Math.max(.05, Math.min(.25, Math.abs(event.deltaY) / 400));
-    setZoom(zoom - Math.sign(event.deltaY) * step, event.clientX - rect.left, event.clientY - rect.top);
-  }, { passive: false });
+  pan.addEventListener(
+    "wheel",
+    (event) => {
+      if (!event.deltaY || event.ctrlKey || event.metaKey) return;
+      event.preventDefault();
+      const rect = pan.getBoundingClientRect();
+      const step = Math.max(0.05, Math.min(0.25, Math.abs(event.deltaY) / 400));
+      setZoom(
+        zoom - Math.sign(event.deltaY) * step,
+        event.clientX - rect.left,
+        event.clientY - rect.top,
+      );
+    },
+    { passive: false },
+  );
 
   function show(next) {
-    const available = thumbs.filter(button => !button.hidden);
+    const available = thumbs.filter((button) => !button.hidden);
     if (!available.length) {
       viewer.remove();
       return;
@@ -451,7 +626,8 @@ function setupGallery(viewer) {
     status.textContent = label;
     for (const thumb of available) thumb.setAttribute("aria-pressed", thumb === selected);
     selected.scrollIntoView({ block: "nearest", inline: "nearest" });
-    for (const arrow of viewer.querySelectorAll(".photo-prev, .photo-next")) arrow.hidden = available.length < 2;
+    for (const arrow of viewer.querySelectorAll(".photo-prev, .photo-next"))
+      arrow.hidden = available.length < 2;
     setZoom(1);
     const preview = selected.dataset.url;
     const original = fullSizePhoto(preview);
@@ -479,40 +655,47 @@ function setupGallery(viewer) {
     sharpImage.src = original;
   }
 
-  viewer.addEventListener("click", event => {
+  viewer.addEventListener("click", (event) => {
     const control = event.target.closest("button");
     if (!control) return;
-    const available = thumbs.filter(button => !button.hidden);
+    const available = thumbs.filter((button) => !button.hidden);
     if (control.hasAttribute("data-photo-index")) return show(available.indexOf(control));
     const action = control.dataset.photoAction;
     if (action === "prev" || action === "next") show(index + (action === "next" ? 1 : -1));
-    if (action === "in") setZoom(zoom + .25);
-    if (action === "out") setZoom(zoom - .25);
+    if (action === "in") setZoom(zoom + 0.25);
+    if (action === "out") setZoom(zoom - 0.25);
     if (action === "reset") setZoom(1);
     if (action === "expand") setExpanded(!viewer.classList.contains("is-expanded"));
   });
 
-  viewer.addEventListener("keydown", event => {
+  viewer.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && viewer.classList.contains("is-expanded")) {
       event.preventDefault();
       event.stopPropagation();
       setExpanded(false);
       return;
     }
-    if (!["ArrowLeft", "ArrowRight"].includes(event.key) || (event.target === pan && zoom > 1)) return;
+    if (!["ArrowLeft", "ArrowRight"].includes(event.key) || (event.target === pan && zoom > 1))
+      return;
     event.preventDefault();
     show(index + (event.key === "ArrowRight" ? 1 : -1));
   });
 
   let drag = null;
-  pan.addEventListener("pointerdown", event => {
+  pan.addEventListener("pointerdown", (event) => {
     if (zoom <= 1 || event.pointerType !== "mouse" || event.button !== 0) return;
     event.preventDefault();
-    drag = { id: event.pointerId, x: event.clientX, y: event.clientY, left: pan.scrollLeft, top: pan.scrollTop };
+    drag = {
+      id: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      left: pan.scrollLeft,
+      top: pan.scrollTop,
+    };
     pan.setPointerCapture(event.pointerId);
     pan.classList.add("is-dragging");
   });
-  pan.addEventListener("pointermove", event => {
+  pan.addEventListener("pointermove", (event) => {
     if (drag?.id !== event.pointerId) return;
     pan.scrollLeft = drag.left - (event.clientX - drag.x);
     pan.scrollTop = drag.top - (event.clientY - drag.y);
@@ -523,7 +706,7 @@ function setupGallery(viewer) {
   });
 
   function hideFailedPhoto() {
-    const failed = thumbs.filter(button => !button.hidden)[index];
+    const failed = thumbs.filter((button) => !button.hidden)[index];
     if (failed) failed.hidden = true;
     show(0);
   }
@@ -537,10 +720,12 @@ function setupGallery(viewer) {
 
 function photoUrls(item) {
   const savedPhotos = Array.isArray(item.photos) ? item.photos : [];
-  const urls = savedPhotos.flatMap(photo => {
+  const urls = savedPhotos.flatMap((photo) => {
     try {
       const url = new URL(typeof photo === "string" ? photo : photo?.url);
-      return ["http:", "https:"].includes(url.protocol) && !url.username && !url.password ? [url.href] : [];
+      return ["http:", "https:"].includes(url.protocol) && !url.username && !url.password
+        ? [url.href]
+        : [];
     } catch {
       return [];
     }
@@ -551,28 +736,46 @@ function photoUrls(item) {
 function photoMarkup(url, sharp = false) {
   const src = sharp ? fullSizePhoto(url) : url;
   const fallback = src === url ? "" : ' data-fallback="' + escapeHtml(url) + '"';
-  return '<img class="object-photo" src="' + escapeHtml(src) + '"' + fallback + ' alt="Фото объекта" loading="lazy" referrerpolicy="no-referrer">';
+  return (
+    '<img class="object-photo" src="' +
+    escapeHtml(src) +
+    '"' +
+    fallback +
+    ' alt="Фото объекта" loading="lazy" referrerpolicy="no-referrer">'
+  );
 }
 
 function listingText(value) {
   return String(value ?? "")
-    .replace(/\p{Extended_Pictographic}(?:[\uFE0E\uFE0F\u200D]|\p{Emoji_Modifier})*|[\uFE0E\uFE0F\u200D]|[0-9#*]\uFE0F?\u20E3/gu, "")
+    .replace(
+      /\p{Extended_Pictographic}(?:[\uFE0E\uFE0F\u200D]|\p{Emoji_Modifier})*|[\uFE0E\uFE0F\u200D]|[0-9#*]\uFE0F?\u20E3/gu,
+      "",
+    )
     .replace(/[ \t]{2,}/g, " ")
     .trim();
 }
 
 function floorSummary(item) {
-  const display = value => value == null || String(value).trim() === "" ? "—" : String(value).trim();
+  const display = (value) =>
+    value == null || String(value).trim() === "" ? "—" : String(value).trim();
   return display(item.floor) + " / " + display(item.floors);
 }
 
 function cardCharacteristics(item) {
-  const details = extraFields.filter(([key]) => key !== "floor" && key !== "floors" &&
-    item[key] != null && item[key] !== "");
+  const details = extraFields.filter(
+    ([key]) => key !== "floor" && key !== "floors" && item[key] != null && item[key] !== "",
+  );
   if (!details.length) return "";
-  return '<dl class="selection-facts">' + details.map(([key, label]) =>
-    '<div><dt>' + escapeHtml(label) + '</dt><dd>' + escapeHtml(item[key]) + '</dd></div>'
-  ).join("") + '</dl>';
+  return (
+    '<dl class="selection-facts">' +
+    details
+      .map(
+        ([key, label]) =>
+          "<div><dt>" + escapeHtml(label) + "</dt><dd>" + escapeHtml(item[key]) + "</dd></div>",
+      )
+      .join("") +
+    "</dl>"
+  );
 }
 
 function card(item) {
@@ -610,20 +813,20 @@ function card(item) {
 }
 function syncResultSelection(items = currentResults()) {
   const all = $("select-results");
-  const found = new Set(items.map(item => item.id));
+  const found = new Set(items.map((item) => item.id));
   for (const id of selectedListings) if (!found.has(id)) selectedListings.delete(id);
   all.disabled = !items.length;
   all.checked = items.length > 0 && selectedListings.size === items.length;
   all.indeterminate = selectedListings.size > 0 && !all.checked;
 }
 
-$("select-results").addEventListener("change", event => {
+$("select-results").addEventListener("change", (event) => {
   selectedListings.clear();
   if (event.target.checked) for (const item of currentResults()) selectedListings.add(item.id);
   render(false);
 });
 
-$("cards").addEventListener("change", event => {
+$("cards").addEventListener("change", (event) => {
   const { pick } = event.target.dataset;
   if (pick === undefined) return;
   if (event.target.checked) selectedListings.add(pick);
@@ -638,17 +841,21 @@ function currentResults() {
     unitHigh: (a, b) => (b.unit ?? -Infinity) - (a.unit ?? -Infinity),
     low: (a, b) => (a.price ?? Infinity) - (b.price ?? Infinity),
     high: (a, b) => (b.price ?? -Infinity) - (a.price ?? -Infinity),
-    area: (a, b) => (b.area ?? -Infinity) - (a.area ?? -Infinity)
+    area: (a, b) => (b.area ?? -Infinity) - (a.area ?? -Infinity),
   };
   return filtered(state.filters).sort(order[state.sort]);
 }
 function render(resetPage = true) {
   const items = currentResults();
   const detailsDialog = $("details-dialog");
-  if (detailsDialog.open && !items.some(item => item.id === detailsDialog.dataset.listingId)) detailsDialog.close();
+  if (detailsDialog.open && !items.some((item) => item.id === detailsDialog.dataset.listingId))
+    detailsDialog.close();
 
   syncResultSelection(items);
-  const unitPrices = items.map(item => item.unit).filter(Number.isFinite).sort((a, b) => a - b);
+  const unitPrices = items
+    .map((item) => item.unit)
+    .filter(Number.isFinite)
+    .sort((a, b) => a - b);
   const count = unitPrices.length;
   const median = count
     ? (unitPrices[Math.floor((count - 1) / 2)] + unitPrices[Math.floor(count / 2)]) / 2
@@ -658,7 +865,7 @@ function render(resetPage = true) {
     ["unit-min", unitPrices[0]],
     ["unit-avg", count ? unitPrices.reduce((sum, price) => sum + price, 0) / count : null],
     ["unit-median", median],
-    ["unit-max", unitPrices.at(-1)]
+    ["unit-max", unitPrices.at(-1)],
   ]) {
     $(id).textContent = count ? perSquare(value) : "—";
   }
@@ -672,8 +879,11 @@ function render(resetPage = true) {
   exportButton.disabled = Boolean(loadError) || exportButton.getAttribute("aria-busy") === "true";
   $("cards").classList.toggle("grid", state.view === "grid" && items.length > 0);
   photoObserver.disconnect();
-  $("cards").innerHTML = loadError ? "" : items.length ? visibleItems.map(card).join("") :
-    '<div class="empty"><strong>Объекты не найдены</strong><p>Измените параметры поиска или сбросьте фильтры.</p><button type="button" class="button outline" data-clear>Сбросить фильтры</button></div>';
+  $("cards").innerHTML = loadError
+    ? ""
+    : items.length
+      ? visibleItems.map(card).join("")
+      : '<div class="empty"><strong>Объекты не найдены</strong><p>Измените параметры поиска или сбросьте фильтры.</p><button type="button" class="button outline" data-clear>Сбросить фильтры</button></div>';
   for (const card of $("cards").querySelectorAll("[data-photo-listing]:not(:has(.card-photo))")) {
     photoObserver.observe(card);
   }
@@ -682,17 +892,27 @@ function render(resetPage = true) {
     const checkbox = button.querySelector('input[type="checkbox"]');
     if (checkbox) checkbox.checked = checkedTypes.has(key);
     else button.setAttribute("aria-pressed", key === state.type);
-    button.querySelector("b").textContent = loadError ? "—" : format.format(filtered(state.filters, key).length);
+    button.querySelector("b").textContent = loadError
+      ? "—"
+      : format.format(filtered(state.filters, key).length);
   }
   $("active-filters").replaceChildren();
   const selectedLocation = locationSummary(state.location);
   $("location-summary").textContent = selectedLocation ? "Выбрано: " + selectedLocation : "";
   for (const [key, label, options] of fields) {
     const keys = filterKeys([key, label, options]);
-    const values = keys.filter(name => name in state.filters).map(name => {
-      if (name === key) return Array.isArray(state.filters[name]) ? state.filters[name].join(", ") : state.filters[name];
-      return (name.endsWith("From") ? "от " : "до ") + (options === "date" ? state.filters[name] : format.format(Number(state.filters[name])));
-    });
+    const values = keys
+      .filter((name) => name in state.filters)
+      .map((name) => {
+        if (name === key)
+          return Array.isArray(state.filters[name])
+            ? state.filters[name].join(", ")
+            : state.filters[name];
+        return (
+          (name.endsWith("From") ? "от " : "до ") +
+          (options === "date" ? state.filters[name] : format.format(Number(state.filters[name])))
+        );
+      });
     if (!values.length) continue;
     const chip = document.createElement("button");
     chip.type = "button";
@@ -729,14 +949,15 @@ function renderPages(total) {
   const end = Math.min(total, start + 5);
   if (start > 1) addButton("1", 1);
   if (start > 2) nav.append("…");
-  for (let page = start; page <= end; page++) addButton(String(page), page, false, page === state.page);
+  for (let page = start; page <= end; page++)
+    addButton(String(page), page, false, page === state.page);
   if (end < total - 1) nav.append("…");
   if (end < total) addButton(String(total), total);
   addButton("›", state.page + 1, state.page === total);
   nav.lastChild.setAttribute("aria-label", "Следующая страница");
 }
 
-$("catalog-pages").addEventListener("click", event => {
+$("catalog-pages").addEventListener("click", (event) => {
   const button = event.target.closest("button[data-page]");
   if (!button || button.disabled) return;
   state.page = Number(button.dataset.page);
@@ -761,11 +982,14 @@ function reset() {
   render();
 }
 
-
-const optionalFilters = fields.filter(field => !basicFields.includes(field)).map(([key, label]) => [key, label]);
+const optionalFilters = fields
+  .filter((field) => !basicFields.includes(field))
+  .map(([key, label]) => [key, label]);
 
 function renderQuickFields() {
-  const visible = fields.filter(field => basicFields.includes(field) || enabledFilters.has(field[0]));
+  const visible = fields.filter(
+    (field) => basicFields.includes(field) || enabledFilters.has(field[0]),
+  );
   $("quick").innerHTML = visible.map(fieldMarkup).join("");
   fill($("quick"), state.filters);
 }
@@ -783,7 +1007,8 @@ function setEnabledFilters(ids) {
 }
 
 function renderExportSelection() {
-  for (const checkbox of $("data-fields").querySelectorAll("input")) checkbox.checked = selectedFields.has(checkbox.value);
+  for (const checkbox of $("data-fields").querySelectorAll("input"))
+    checkbox.checked = selectedFields.has(checkbox.value);
   const all = $("all-data-fields");
   all.checked = selectedFields.size === dataGroups.length;
   all.indeterminate = selectedFields.size > 0 && !all.checked;
@@ -796,40 +1021,51 @@ function setDataFields(ids) {
 }
 
 function dataCheckboxes(name, groups) {
-  return groups.map(([id, label]) =>
-    '<label class="filter-choice" data-choice><input type="checkbox" name="' + name +
-    '" value="' + id + '"><span>' + label + '</span></label>'
-  ).join("");
+  return groups
+    .map(
+      ([id, label]) =>
+        '<label class="filter-choice" data-choice><input type="checkbox" name="' +
+        name +
+        '" value="' +
+        id +
+        '"><span>' +
+        label +
+        "</span></label>",
+    )
+    .join("");
 }
 
 $("data-fields").innerHTML = dataCheckboxes("data", dataGroups);
 renderExportSelection();
 $("data-fields").addEventListener("change", () => {
-  setDataFields([...$("data-fields").querySelectorAll("input:checked")].map(input => input.value));
+  setDataFields(
+    [...$("data-fields").querySelectorAll("input:checked")].map((input) => input.value),
+  );
 });
-$("all-data-fields").addEventListener("change", event => {
+$("all-data-fields").addEventListener("change", (event) => {
   setDataFields(event.target.checked ? dataGroups.map(([id]) => id) : []);
 });
 renderQuickFields();
 
-$("operations").addEventListener("click", event => {
+$("operations").addEventListener("click", (event) => {
   const button = event.target.closest("[data-operation]");
   if (!button || state.operation === button.dataset.operation) return;
   state.operation = button.dataset.operation;
-  for (const sibling of $("operations").children) sibling.setAttribute("aria-pressed", sibling === button);
+  for (const sibling of $("operations").children)
+    sibling.setAttribute("aria-pressed", sibling === button);
   for (const key of ["price", "unit"]) {
     for (const suffix of ["From", "To"]) delete state.filters[key + suffix];
   }
   renderQuickFields();
   render();
 });
-$("categories").addEventListener("click", event => {
+$("categories").addEventListener("click", (event) => {
   const button = event.target.closest("[data-type]");
   if (!button || section === "commercial") return;
   state.type = button.dataset.type;
   render();
 });
-$("categories").addEventListener("change", event => {
+$("categories").addEventListener("change", (event) => {
   const checkbox = event.target.closest('input[type="checkbox"]');
   if (!checkbox || checkbox.disabled) return;
   if (checkbox.checked) checkedTypes.add(checkbox.value);
@@ -843,24 +1079,25 @@ function applySearch() {
 }
 
 $("search").addEventListener("input", applySearch);
-$("catalog-search-form").addEventListener("submit", event => {
+$("catalog-search-form").addEventListener("submit", (event) => {
   event.preventDefault();
   applySearch();
 });
-$("sort").addEventListener("change", event => {
+$("sort").addEventListener("change", (event) => {
   state.sort = event.target.value;
   render();
 });
-$("views").addEventListener("click", event => {
+$("views").addEventListener("click", (event) => {
   const button = event.target.closest("[data-view]");
   if (!button) return;
   state.view = button.dataset.view;
-  for (const sibling of $("views").children) sibling.setAttribute("aria-pressed", sibling === button);
+  for (const sibling of $("views").children)
+    sibling.setAttribute("aria-pressed", sibling === button);
   render(false);
 });
 $("reset").addEventListener("click", reset);
 $("quick").addEventListener("change", applyQuick);
-$("quick").addEventListener("submit", event => {
+$("quick").addEventListener("submit", (event) => {
   event.preventDefault();
   applyQuick();
 });
@@ -885,8 +1122,12 @@ const advanced = $("advanced");
 $("advanced-fields").innerHTML = dataCheckboxes("enabled", optionalFilters);
 const choices = [...advanced.querySelectorAll('[name="enabled"]')];
 function findFilters() {
-  for (const choice of choices) choice.closest("[data-choice]").hidden = !textMatch(choice.labels[0].textContent, $("filter-search").value);
-  $("no-filter").hidden = choices.some(choice => !choice.closest("[data-choice]").hidden);
+  for (const choice of choices)
+    choice.closest("[data-choice]").hidden = !textMatch(
+      choice.labels[0].textContent,
+      $("filter-search").value,
+    );
+  $("no-filter").hidden = choices.some((choice) => !choice.closest("[data-choice]").hidden);
 }
 document.querySelector("[data-open-filters]").addEventListener("click", () => {
   for (const choice of choices) choice.checked = enabledFilters.has(choice.value);
@@ -896,7 +1137,7 @@ document.querySelector("[data-open-filters]").addEventListener("click", () => {
   $("filter-search").focus();
 });
 $("filter-search").addEventListener("input", findFilters);
-$("filter-search").addEventListener("keydown", event => {
+$("filter-search").addEventListener("keydown", (event) => {
   if (event.key === "Enter") event.preventDefault();
 });
 $("select-all-fields").addEventListener("click", () => {
@@ -905,12 +1146,12 @@ $("select-all-fields").addEventListener("click", () => {
 $("reset-draft").addEventListener("click", () => {
   for (const choice of choices) choice.checked = false;
 });
-advanced.addEventListener("submit", event => {
+advanced.addEventListener("submit", (event) => {
   event.preventDefault();
-  setEnabledFilters(choices.filter(choice => choice.checked).map(choice => choice.value));
+  setEnabledFilters(choices.filter((choice) => choice.checked).map((choice) => choice.value));
   filterDialog.close();
 });
-$("toggle-sidebar").addEventListener("click", event => {
+$("toggle-sidebar").addEventListener("click", (event) => {
   const button = event.currentTarget;
   const open = button.getAttribute("aria-expanded") !== "true";
   button.setAttribute("aria-expanded", open);
@@ -922,10 +1163,13 @@ function exportFilterRows() {
   const result = [
     ["Параметр", "Значение"],
     ["Сделка", { sale: "Продажа", rent: "Аренда", all: "Все сделки" }[state.operation]],
-    ["Категория", section === "commercial"
-      ? [...checkedTypes].map(key => commercialTypes[key]).join(", ") || "Все типы"
-      : types[state.type]],
-    ["Сортировка", $("sort").selectedOptions[0].textContent]
+    [
+      "Категория",
+      section === "commercial"
+        ? [...checkedTypes].map((key) => commercialTypes[key]).join(", ") || "Все типы"
+        : types[state.type],
+    ],
+    ["Сортировка", $("sort").selectedOptions[0].textContent],
   ];
   if (state.query.trim()) result.push(["Поиск", state.query.trim()]);
   const place = locationSummary(state.location);
@@ -933,12 +1177,14 @@ function exportFilterRows() {
 
   for (const field of fields) {
     const [key, label, options] = field;
-    const values = filterKeys(field).filter(name => name in state.filters).map(name => {
-      const value = state.filters[name];
-      if (Array.isArray(options)) return Array.isArray(value) ? value.join(", ") : value;
-      if (options === "date") return (name.endsWith("From") ? "от " : "до ") + value;
-      return (name.endsWith("From") ? "от " : "до ") + format.format(Number(value));
-    });
+    const values = filterKeys(field)
+      .filter((name) => name in state.filters)
+      .map((name) => {
+        const value = state.filters[name];
+        if (Array.isArray(options)) return Array.isArray(value) ? value.join(", ") : value;
+        if (options === "date") return (name.endsWith("From") ? "от " : "до ") + value;
+        return (name.endsWith("From") ? "от " : "до ") + format.format(Number(value));
+      });
     if (values.length) {
       result.push([fieldLabel(key, label), values.length ? values.join(" ") : "Любое значение"]);
     }
@@ -947,24 +1193,35 @@ function exportFilterRows() {
 }
 
 let exportUrl;
-$("export-excel").addEventListener("click", async event => {
+$("export-excel").addEventListener("click", async (event) => {
   if (!validate($("quick"), true)) return;
   const button = event.currentTarget;
   const status = $("export-status");
   const labels = {
-    price: fieldLabel("price", "Цена, ₽"), unit: fieldLabel("unit", "Цена за м², ₽"), area: "Площадь, м²",
-    region: "Регион", district: "Район / округ", settlement: "Населённый пункт", street: "Улица", house: "Дом",
+    price: fieldLabel("price", "Цена, ₽"),
+    unit: fieldLabel("unit", "Цена за м², ₽"),
+    area: "Площадь, м²",
+    region: "Регион",
+    district: "Район / округ",
+    settlement: "Населённый пункт",
+    street: "Улица",
+    house: "Дом",
     floorSummary: "Этаж / этажность",
-    condition: "Отделка", source: "Источник", published: "Дата публикации", link: "Ссылка на объявление"
+    condition: "Отделка",
+    source: "Источник",
+    published: "Дата публикации",
+    link: "Ссылка на объявление",
   };
   const columns = dataGroups.filter(([id]) => selectedFields.has(id)).flatMap(([, , keys]) => keys);
   const found = currentResults();
-  const picked = found.filter(item => selectedListings.has(item.id));
+  const picked = found.filter((item) => selectedListings.has(item.id));
   const rows = [
-    ["Название", "Сделка", ...columns.map(key => labels[key])],
-    ...(picked.length ? picked : found).map(item => [
-      item.title, item.operation === "sale" ? "Продажа" : "Аренда", ...columns.map(key => key === "floorSummary" ? floorSummary(item) : item[key])
-    ])
+    ["Название", "Сделка", ...columns.map((key) => labels[key])],
+    ...(picked.length ? picked : found).map((item) => [
+      item.title,
+      item.operation === "sale" ? "Продажа" : "Аренда",
+      ...columns.map((key) => (key === "floorSummary" ? floorSummary(item) : item[key])),
+    ]),
   ];
   status.textContent = "";
   button.textContent = "Готовим Excel…";
@@ -989,12 +1246,12 @@ $("export-excel").addEventListener("click", async event => {
 
 for (const dialog of document.querySelectorAll("dialog")) {
   dialog.querySelector("[data-close]").addEventListener("click", () => dialog.close());
-  dialog.addEventListener("keydown", event => {
+  dialog.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") return;
     event.preventDefault();
     dialog.close();
   });
-  dialog.addEventListener("click", event => {
+  dialog.addEventListener("click", (event) => {
     if (event.target === dialog && dialog.matches(":modal")) dialog.close();
   });
 }
@@ -1002,13 +1259,13 @@ for (const dialog of document.querySelectorAll("dialog")) {
 function prepareListingPhotos(event) {
   const button = event.target.closest("[data-details]");
   if (!button || button.contains(event.relatedTarget)) return;
-  const item = listings.find(listing => listing.id === button.dataset.details);
+  const item = listings.find((listing) => listing.id === button.dataset.details);
   if (item) void loadListingPhotos(item);
 }
 
 $("cards").addEventListener("pointerover", prepareListingPhotos);
 $("cards").addEventListener("focusin", prepareListingPhotos);
-$("cards").addEventListener("click", event => {
+$("cards").addEventListener("click", (event) => {
   if (event.target.closest("[data-clear]")) {
     reset();
     $("search").focus();
@@ -1016,33 +1273,47 @@ $("cards").addEventListener("click", event => {
   }
   const button = event.target.closest("[data-details]");
   if (!button) return;
-  const item = listings.find(listing => listing.id === button.dataset.details);
+  const item = listings.find((listing) => listing.id === button.dataset.details);
   if (!item) return;
   const photos = photoUrls(item);
   const photoRequest = photos.length >= 10 ? null : loadListingPhotos(item);
   $("details-title").textContent = listingText(item.title);
   const details = [
     ["Сделка", item.operation === "sale" ? "Продажа" : "Аренда"],
-    ["Адрес", item.address], ["Регион", item.region], ["Район / округ", item.district], ["Тип", item.objectType],
+    ["Адрес", item.address],
+    ["Регион", item.region],
+    ["Район / округ", item.district],
+    ["Тип", item.objectType],
 
-    ["Этаж / этажность", floorSummary(item)], ["Отделка", item.condition],
-    ["Опубликовано", dateText(item.published)], ["Источник", item.source]
+    ["Этаж / этажность", floorSummary(item)],
+    ["Отделка", item.condition],
+    ["Опубликовано", dateText(item.published)],
+    ["Источник", item.source],
   ];
-  const history = (item.history ?? []).filter(entry => dateText(entry.date) && (entry.price != null || entry.unit != null));
+  const history = (item.history ?? []).filter(
+    (entry) => dateText(entry.date) && (entry.price != null || entry.unit != null),
+  );
   const characteristics = details
     .filter(([, value]) => value != null && value !== "")
-    .map(([name, value]) => `
+    .map(
+      ([name, value]) => `
       <div class="detail-fact ${name === "Цена" ? "detail-price" : name === "Цена за м²" ? "detail-unit" : name === "Площадь" ? "detail-area" : ""}">
         <dt>${name}</dt>
         <dd>${escapeHtml(listingText(value))}</dd>
       </div>
-    `).join("");
-  const priceHistory = history.map(entry => `
+    `,
+    )
+    .join("");
+  const priceHistory = history
+    .map(
+      (entry) => `
     <li>
       <span>${dateText(entry.date)}</span>
       <strong>${entry.price != null ? money(entry.price, item.operation) : perSquare(entry.unit, item.operation)}</strong>
     </li>
-  `).join("");
+  `,
+    )
+    .join("");
   const link = sourceLink(item);
 
   const snapshots = [item.archivedScreenshotUrl, screenshotLink(item)].filter(Boolean);
@@ -1057,25 +1328,37 @@ $("cards").addEventListener("click", event => {
       <div class="detail-size"><span>Площадь</span><strong>${item.area == null ? "—" : format.format(item.area) + " м²"}</strong></div>
     </section>
     <dl class="detail-facts">${characteristics}</dl>
-    ${description ? `
+    ${
+      description
+        ? `
       <section class="detail-description" aria-labelledby="detail-description-title">
         <h3 id="detail-description-title">Описание объекта</h3>
         <p>${escapeHtml(description)}</p>
       </section>
-    ` : ""}
-    ${snapshots.length ? `
+    `
+        : ""
+    }
+    ${
+      snapshots.length
+        ? `
       <section class="source-snapshot" hidden>
         <h3>Скриншот исходного объявления</h3>
         <img alt="Скриншот объявления" referrerpolicy="no-referrer">
         <a class="button outline" target="_blank" rel="noopener noreferrer">Открыть скриншот</a>
       </section>
-    ` : ""}
-    ${priceHistory ? `
+    `
+        : ""
+    }
+    ${
+      priceHistory
+        ? `
       <section class="detail-history">
         <h3>История цены</h3>
         <ul>${priceHistory}</ul>
       </section>
-    ` : ""}
+    `
+        : ""
+    }
     ${link ? `<div class="card-actions">${link}</div>` : ""}
   `;
   const dialog = $("details-dialog");
@@ -1091,15 +1374,21 @@ $("cards").addEventListener("click", event => {
     const loadNext = () => {
       if (snapshots.length && snapshot.isConnected) image.setAttribute("src", snapshots.shift());
     };
-    image.addEventListener("load", () => {
-      snapshot.querySelector("a").href = image.src;
-      snapshot.hidden = false;
-      updateDetailsScrollHint();
-    }, { once: true });
+    image.addEventListener(
+      "load",
+      () => {
+        snapshot.querySelector("a").href = image.src;
+        snapshot.hidden = false;
+        updateDetailsScrollHint();
+      },
+      { once: true },
+    );
     image.addEventListener("error", loadNext);
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (dialog.open && snapshot.isConnected) loadNext();
-    }));
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        if (dialog.open && snapshot.isConnected) loadNext();
+      }),
+    );
   }
   setupGallery(detailsBody.querySelector(".photo-viewer"));
   if (photoRequest) {
@@ -1116,30 +1405,35 @@ $("cards").addEventListener("click", event => {
     });
   }
 });
-document.addEventListener("error", event => {
-  if (!event.target.matches?.(".object-photo") || event.target.closest(".photo-viewer")) return;
-  if (event.target.dataset.fallback) {
-    const fallback = event.target.dataset.fallback;
-    delete event.target.dataset.fallback;
-    event.target.src = fallback;
-    return;
-  }
-  const container = event.target.closest(".card-photo, .detail-photos");
-  event.target.remove();
-  if (!container || container.querySelector(".object-photo")) return;
-  if (container.matches(".card-photo") && container.closest(".cards.grid")) {
-    container.outerHTML = photoPlaceholder();
-  } else {
-    container.remove();
-  }
-}, true);
+document.addEventListener(
+  "error",
+  (event) => {
+    if (!event.target.matches?.(".object-photo") || event.target.closest(".photo-viewer")) return;
+    if (event.target.dataset.fallback) {
+      const fallback = event.target.dataset.fallback;
+      delete event.target.dataset.fallback;
+      event.target.src = fallback;
+      return;
+    }
+    const container = event.target.closest(".card-photo, .detail-photos");
+    event.target.remove();
+    if (!container || container.querySelector(".object-photo")) return;
+    if (container.matches(".card-photo") && container.closest(".cards.grid")) {
+      container.outerHTML = photoPlaceholder();
+    } else {
+      container.remove();
+    }
+  },
+  true,
+);
 
 const locationForm = $("location-filter");
 const locationFields = locationForm.elements;
 
 function uniqueOptions(items) {
-  return [...new Set(items.filter(value => typeof value === "string" && value.trim()))]
-    .sort((a, b) => a.localeCompare(b, "ru", { numeric: true }));
+  return [...new Set(items.filter((value) => typeof value === "string" && value.trim()))].sort(
+    (a, b) => a.localeCompare(b, "ru", { numeric: true }),
+  );
 }
 
 const addressKeys = ["settlement", "district", "street", "house"];
@@ -1147,33 +1441,49 @@ const addressKeys = ["settlement", "district", "street", "house"];
 function addressText(value, key) {
   const text = lookupText(value);
   switch (key) {
-    case "district": return text.replace(/\s+(?:район|округ)$/, "");
-    case "settlement": return text.replace(/^(?:г\.|город|пос\.|поселок|с\.|село|пгт\.?)\s*/, "");
-    case "street": return text.replace(/^(?:ул\.|улица|проспект|пр-т|пер\.|переулок)\s*/, "")
-      .replace(/\s+(?:ул\.|улица|проспект|пр-т|пер\.|переулок)$/, "");
-    case "house": return text.replace(/^(?:д\.|дом)\s*/, "").replace(/\s+/g, "").replace(/[abcehkmoptxy]/g, letter => "авсенкмортху"["abcehkmoptxy".indexOf(letter)]);
-    default: return text;
+    case "district":
+      return text.replace(/\s+(?:район|округ)$/, "");
+    case "settlement":
+      return text.replace(/^(?:г\.|город|пос\.|поселок|с\.|село|пгт\.?)\s*/, "");
+    case "street":
+      return text
+        .replace(/^(?:ул\.|улица|проспект|пр-т|пер\.|переулок)\s*/, "")
+        .replace(/\s+(?:ул\.|улица|проспект|пр-т|пер\.|переулок)$/, "");
+    case "house":
+      return text
+        .replace(/^(?:д\.|дом)\s*/, "")
+        .replace(/\s+/g, "")
+        .replace(/[abcehkmoptxy]/g, (letter) => "авсенкмортху"["abcehkmoptxy".indexOf(letter)]);
+    default:
+      return text;
   }
 }
 
 function addressValues(item, key) {
   const values = key === "district" ? [item.district, item.districtGroup] : [item[key]];
-  return values.map(value => addressText(value, key)).filter(Boolean);
+  return values.map((value) => addressText(value, key)).filter(Boolean);
 }
 
 function matchesAddress(item, key, value, exact = false) {
   const wanted = addressText(value, key);
-  return !wanted || addressValues(item, key).some(candidate => exact ? candidate === wanted : candidate.includes(wanted));
+  return (
+    !wanted ||
+    addressValues(item, key).some((candidate) =>
+      exact ? candidate === wanted : candidate.includes(wanted),
+    )
+  );
 }
 
 function updateStreetAvailability() {
   const streetMode = locationFields.mode.value === "street";
   const settlement = locationFields.settlement.value.trim();
-  const selected = settlement && listings.some(item =>
-    matchesAddress(item, "settlement", settlement, true));
+  const selected =
+    settlement && listings.some((item) => matchesAddress(item, "settlement", settlement, true));
   if (streetMode) locationFields.street.disabled = !selected;
   locationFields.street.placeholder = streetMode
-    ? (selected ? "Введите улицу" : "Сначала выберите населённый пункт")
+    ? selected
+      ? "Введите улицу"
+      : "Сначала выберите населённый пункт"
     : "Например: Ачинская, 15";
   const toggle = locationFields.street.parentElement.querySelector(".location-list-toggle");
   if (toggle) toggle.disabled = locationFields.street.disabled;
@@ -1202,7 +1512,9 @@ function splitStreet(value = "") {
 }
 
 function readLocation() {
-  const values = Object.fromEntries(Object.entries(read(locationForm)).map(([key, value]) => [key, value.trim()]));
+  const values = Object.fromEntries(
+    Object.entries(read(locationForm)).map(([key, value]) => [key, value.trim()]),
+  );
   if (values.street) Object.assign(values, splitStreet(values.street));
   return values;
 }
@@ -1221,30 +1533,42 @@ function showLocationSuggestions(input, query = input.value) {
   closeLocationSuggestions();
   if (input.disabled) return;
   const { name } = input;
-  const candidates = name === "settlement" ? listings : listings.filter(item =>
-    matchesAddress(item, "settlement", locationFields.settlement.value, true));
-  const values = uniqueOptions(candidates.flatMap(item => {
-    if (name === "district") return section === "commercial" ? [item.districtGroup, item.district] : [item.district];
-    if (name === "street" && locationFields.mode.value === "radius" && item.street && item.house) return [item.street, item.street + ", " + item.house];
-    return [item[name]];
-  }));
+  const candidates =
+    name === "settlement"
+      ? listings
+      : listings.filter((item) =>
+          matchesAddress(item, "settlement", locationFields.settlement.value, true),
+        );
+  const values = uniqueOptions(
+    candidates.flatMap((item) => {
+      if (name === "district")
+        return section === "commercial" ? [item.districtGroup, item.district] : [item.district];
+      if (name === "street" && locationFields.mode.value === "radius" && item.street && item.house)
+        return [item.street, item.street + ", " + item.house];
+      return [item[name]];
+    }),
+  );
   const wanted = name === "street" ? splitStreet(query) : null;
-  const matches = values.filter(value => {
+  const matches = values.filter((value) => {
     if (!wanted) return addressText(value, name).includes(addressText(query, name));
     const address = splitStreet(value);
-    return addressText(address.street, name).includes(addressText(wanted.street, name)) &&
-      addressText(address.house, "house").includes(addressText(wanted.house, "house"));
+    return (
+      addressText(address.street, name).includes(addressText(wanted.street, name)) &&
+      addressText(address.house, "house").includes(addressText(wanted.house, "house"))
+    );
   });
   if (!matches.length) return;
   const list = $(input.getAttribute("aria-controls"));
-  list.replaceChildren(...matches.map((value, index) => {
-    const option = document.createElement("div");
-    option.id = list.id + "-" + index;
-    option.setAttribute("role", "option");
-    option.setAttribute("aria-selected", "false");
-    option.textContent = value;
-    return option;
-  }));
+  list.replaceChildren(
+    ...matches.map((value, index) => {
+      const option = document.createElement("div");
+      option.id = list.id + "-" + index;
+      option.setAttribute("role", "option");
+      option.setAttribute("aria-selected", "false");
+      option.textContent = value;
+      return option;
+    }),
+  );
   list.hidden = false;
   list.scrollTop = 0;
   input.setAttribute("aria-expanded", "true");
@@ -1265,9 +1589,12 @@ for (const input of locationForm.querySelectorAll('[role="combobox"]')) {
   toggle.type = "button";
   toggle.className = "location-list-toggle";
   toggle.textContent = "▾";
-  toggle.setAttribute("aria-label", "Открыть список: " + input.closest(".field").querySelector("label").textContent);
+  toggle.setAttribute(
+    "aria-label",
+    "Открыть список: " + input.closest(".field").querySelector("label").textContent,
+  );
   toggle.setAttribute("aria-controls", list.id);
-  toggle.addEventListener("mousedown", event => event.preventDefault());
+  toggle.addEventListener("mousedown", (event) => event.preventDefault());
   toggle.addEventListener("click", () => {
     const wasOpen = !list.hidden;
     input.focus();
@@ -1280,12 +1607,12 @@ for (const input of locationForm.querySelectorAll('[role="combobox"]')) {
     if (list.hidden) showLocationSuggestions(input);
   });
   input.addEventListener("blur", closeLocationSuggestions);
-  list.addEventListener("mousedown", event => event.preventDefault());
-  list.addEventListener("click", event => {
+  list.addEventListener("mousedown", (event) => event.preventDefault());
+  list.addEventListener("click", (event) => {
     const option = event.target.closest('[role="option"]');
     if (option) chooseLocationSuggestion(input, option);
   });
-  input.addEventListener("keydown", event => {
+  input.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !list.hidden) {
       event.preventDefault();
       closeLocationSuggestions();
@@ -1302,9 +1629,10 @@ for (const input of locationForm.querySelectorAll('[role="combobox"]')) {
     event.preventDefault();
     if (list.hidden) showLocationSuggestions(input);
     if (list.hidden) return;
-    const next = event.key === "ArrowDown"
-      ? selected?.nextElementSibling || list.firstElementChild
-      : selected?.previousElementSibling || list.lastElementChild;
+    const next =
+      event.key === "ArrowDown"
+        ? selected?.nextElementSibling || list.firstElementChild
+        : selected?.previousElementSibling || list.lastElementChild;
     selected?.setAttribute("aria-selected", "false");
     next.setAttribute("aria-selected", "true");
     input.setAttribute("aria-activedescendant", next.id);
@@ -1314,21 +1642,30 @@ for (const input of locationForm.querySelectorAll('[role="combobox"]')) {
 
 function resolveRadiusCenter(values) {
   if (values.coordinates) {
-    const coordinates = values.coordinates.trim().match(/^(-?\d+(?:\.\d+)?)\s*[,; ]\s*(-?\d+(?:\.\d+)?)$/);
+    const coordinates = values.coordinates
+      .trim()
+      .match(/^(-?\d+(?:\.\d+)?)\s*[,; ]\s*(-?\d+(?:\.\d+)?)$/);
     if (!coordinates) return null;
     const point = coordinates.slice(1).map(Number);
     return Math.abs(point[0]) <= 90 && Math.abs(point[1]) <= 180 ? point : null;
   }
-  const candidates = listings.filter(item => item.point?.length === 2 && item.point.every(Number.isFinite) &&
-    addressKeys.every(key => matchesAddress(item, key, values[key], true)));
+  const candidates = listings.filter(
+    (item) =>
+      item.point?.length === 2 &&
+      item.point.every(Number.isFinite) &&
+      addressKeys.every((key) => matchesAddress(item, key, values[key], true)),
+  );
   const point = candidates[0]?.point;
-  if (!point || candidates.some(item => distanceMeters(point, item.point) > 50)) return null;
+  if (!point || candidates.some((item) => distanceMeters(point, item.point) > 50)) return null;
   return point;
 }
 
 function updateRadiusMap(values, point) {
   const link = $("location-map");
-  const address = addressKeys.map(key => values[key]).filter(Boolean).join(", ");
+  const address = addressKeys
+    .map((key) => values[key])
+    .filter(Boolean)
+    .join(", ");
   link.hidden = !address;
   if (!address) return;
   const [lat, lon] = point ?? [];
@@ -1341,28 +1678,42 @@ function distanceMeters(a, b) {
   const rad = Math.PI / 180;
   const deltaLat = (b[0] - a[0]) * rad;
   const deltaLon = (b[1] - a[1]) * rad;
-  const h = Math.sin(deltaLat / 2) ** 2 + Math.cos(a[0] * rad) * Math.cos(b[0] * rad) * Math.sin(deltaLon / 2) ** 2;
+  const h =
+    Math.sin(deltaLat / 2) ** 2 +
+    Math.cos(a[0] * rad) * Math.cos(b[0] * rad) * Math.sin(deltaLon / 2) ** 2;
   return 12742000 * Math.asin(Math.sqrt(Math.min(1, h)));
 }
 function matchesLocation(item, location) {
-  if (location.mode === "radius") return item.point != null && distanceMeters(location.center, item.point) <= location.radius;
-  return addressKeys.every(key => matchesAddress(item, key, location[key], key === "house" || key === "settlement" || (location.mode === "street" && key === "street")));
+  if (location.mode === "radius")
+    return item.point != null && distanceMeters(location.center, item.point) <= location.radius;
+  return addressKeys.every((key) =>
+    matchesAddress(
+      item,
+      key,
+      location[key],
+      key === "house" || key === "settlement" || (location.mode === "street" && key === "street"),
+    ),
+  );
 }
 function locationSummary(location) {
-  if (location.mode === "radius") return location.address + " · " + format.format(location.radius) + " м";
-  return addressKeys.map(key => location[key]).filter(Boolean).join(" · ");
+  if (location.mode === "radius")
+    return location.address + " · " + format.format(location.radius) + " м";
+  return addressKeys
+    .map((key) => location[key])
+    .filter(Boolean)
+    .join(" · ");
 }
 function populateLocationOptions() {
   updateLocationFields();
 }
-locationForm.addEventListener("click", event => {
+locationForm.addEventListener("click", (event) => {
   const button = event.target.closest("[data-location-choice]");
   if (!button) return;
   locationFields.mode.value = button.dataset.locationChoice;
   $("location-error").textContent = "";
   updateLocationFields();
 });
-locationForm.addEventListener("input", event => {
+locationForm.addEventListener("input", (event) => {
   $("location-error").textContent = "";
   if (event.target.name === "settlement") {
     locationFields.district.value = "";
@@ -1375,7 +1726,7 @@ locationForm.addEventListener("input", event => {
   if (event.target.matches('[role="combobox"]')) showLocationSuggestions(event.target);
   if (locationFields.mode.value === "radius") updateRadiusMap(readLocation());
 });
-locationForm.addEventListener("submit", event => {
+locationForm.addEventListener("submit", (event) => {
   event.preventDefault();
   closeLocationSuggestions();
   const values = readLocation();
@@ -1398,7 +1749,15 @@ locationForm.addEventListener("submit", event => {
         : "Для этого дома не найдено однозначных координат. Найди дом на карте и введи широту и долготу.";
       return;
     }
-    state.location = { mode: "radius", center: point, address: addressKeys.map(key => values[key]).filter(Boolean).join(", "), radius: Number(values.radius) };
+    state.location = {
+      mode: "radius",
+      center: point,
+      address: addressKeys
+        .map((key) => values[key])
+        .filter(Boolean)
+        .join(", "),
+      radius: Number(values.radius),
+    };
   } else {
     state.location = values;
   }
@@ -1418,16 +1777,19 @@ function setTheme(dark) {
 }
 try {
   setTheme(localStorage.getItem("landscope-theme") === "dark");
-} catch { }
+} catch {}
 $("theme").addEventListener("click", () => {
   const dark = $("theme").getAttribute("aria-pressed") !== "true";
   setTheme(dark);
   try {
     localStorage.setItem("landscope-theme", dark ? "dark" : "light");
-  } catch { }
+  } catch {}
 });
 async function loadCatalog() {
-  loadError = location.protocol === "file:" ? "Откройте сайт через http://localhost/" : "Загрузка объявлений…";
+  loadError =
+    location.protocol === "file:"
+      ? "Откройте сайт через http://localhost/"
+      : "Загрузка объявлений…";
   populateLocationOptions();
   render();
   if (location.protocol === "file:") return;
@@ -1437,31 +1799,50 @@ async function loadCatalog() {
     const result = await response.json();
 
     result.sort((a, b) => a.id.localeCompare(b.id, "en", { numeric: true }));
-    listings = result.filter(item => item.active === true).map(item => {
-      const objectType = (item.objectType || "").trim().replace(/\s+/g, " ");
-      const original = objectType.toLowerCase();
-      const type = /свободн(?:ое|ого)\s+назначени[ея]/iu.test(original) || original === "псн" ? "flexible" : categoryKeys.get(original) || (/торгов/.test(original) ? "retail" : /производ/.test(original) ? "industrial" : undefined);
-      const unit = Number.isFinite(item.price) && item.price >= 0 && Number.isFinite(item.area) && item.area > 0
-        ? item.price / item.area : null;
-      return {
-        ...item, type: section === "commercial" ? commercialCategory(objectType) : type, objectType, unit: Number.isFinite(unit) ? unit : null,
-        condition: item.condition?.trim() || null,
-        conditionGroup: commercialCondition(item.condition),
-        districtGroup: commercialDistrict(item),
-        source: item.source?.trim() || null,
-        region: item.region?.trim() || null,
-        district: item.district?.trim() || null,
-        settlement: item.settlement?.trim() || null,
-        street: item.street?.trim() || null
-      };
-
-    });
+    listings = result
+      .filter((item) => item.active === true)
+      .map((item) => {
+        const objectType = (item.objectType || "").trim().replace(/\s+/g, " ");
+        const original = objectType.toLowerCase();
+        const type =
+          /свободн(?:ое|ого)\s+назначени[ея]/iu.test(original) || original === "псн"
+            ? "flexible"
+            : categoryKeys.get(original) ||
+              (/торгов/.test(original)
+                ? "retail"
+                : /производ/.test(original)
+                  ? "industrial"
+                  : undefined);
+        const unit =
+          Number.isFinite(item.price) &&
+          item.price >= 0 &&
+          Number.isFinite(item.area) &&
+          item.area > 0
+            ? item.price / item.area
+            : null;
+        return {
+          ...item,
+          type: section === "commercial" ? commercialCategory(objectType) : type,
+          objectType,
+          unit: Number.isFinite(unit) ? unit : null,
+          condition: item.condition?.trim() || null,
+          conditionGroup: commercialCondition(item.condition),
+          districtGroup: commercialDistrict(item),
+          source: item.source?.trim() || null,
+          region: item.region?.trim() || null,
+          district: item.district?.trim() || null,
+          settlement: item.settlement?.trim() || null,
+          street: item.street?.trim() || null,
+        };
+      });
     for (const [options, key] of [
       [conditions, "condition"],
-      [sourceOptions, "source"]
+      [sourceOptions, "source"],
     ]) {
-      const values = options === conditions && section === "commercial"
-        ? ru09Conditions : uniqueOptions(listings.map(item => item[key]));
+      const values =
+        options === conditions && section === "commercial"
+          ? ru09Conditions
+          : uniqueOptions(listings.map((item) => item[key]));
       options.splice(0, options.length, ...values);
     }
     loadError = "";
@@ -1476,10 +1857,12 @@ async function loadCatalog() {
 const sectionNames = {
   commercial: "Коммерческая недвижимость",
   residential: "Жилая недвижимость",
-  structures: "Сооружение"
+  structures: "Сооружение",
 };
 const params = new URLSearchParams(location.search);
-const section = Object.hasOwn(sectionNames, params.get("section")) ? params.get("section") : "commercial";
+const section = Object.hasOwn(sectionNames, params.get("section"))
+  ? params.get("section")
+  : "commercial";
 const viewTitles = { market: "Отчёт по рынку", analogs: "Подбор аналогов" };
 const view = params.get("view");
 const hasReport = Object.hasOwn(viewTitles, view);
@@ -1494,21 +1877,33 @@ if (hasReport) {
     conditions.splice(0, conditions.length, ...ru09Conditions);
     renderQuickFields();
     $("categories").classList.add("commercial-types");
-    $("categories").innerHTML = Object.entries(commercialTypes).map(([key, label]) => `
+    $("categories").innerHTML = Object.entries(commercialTypes)
+      .map(
+        ([key, label]) => `
       <label class="category" data-type="${key}">
         <input type="checkbox" value="${key}" ${checkedTypes.has(key) ? "checked" : ""}>
         <span>${label}</span>
         <b></b>
       </label>
-    `).join("");
+    `,
+      )
+      .join("");
   } else {
-    $("categories").innerHTML = Object.entries(types).map(([key, label]) =>
-  '<button class="category" type="button" data-type="' + key + '" aria-pressed="false">' + label + ' <b></b></button>').join("");
+    $("categories").innerHTML = Object.entries(types)
+      .map(
+        ([key, label]) =>
+          '<button class="category" type="button" data-type="' +
+          key +
+          '" aria-pressed="false">' +
+          label +
+          " <b></b></button>",
+      )
+      .join("");
   }
   loadCatalog();
 }
 
-document.addEventListener("click", event => {
+document.addEventListener("click", (event) => {
   const button = event.target.closest("[data-number-step]");
   if (!button) return;
   const input = button.closest(".number-control").querySelector("input");

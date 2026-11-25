@@ -13,13 +13,13 @@ for (const navigation of document.querySelectorAll(".section-nav")) {
     const tab = menu.closest(".section-tab");
     const arrow = menu.querySelector("summary");
 
-    tab.addEventListener("pointerenter", event => {
+    tab.addEventListener("pointerenter", (event) => {
       if (event.pointerType !== "mouse") return;
       closeOtherMenus(menu);
       menu.open = true;
     });
 
-    tab.addEventListener("pointerleave", event => {
+    tab.addEventListener("pointerleave", (event) => {
       if (event.pointerType === "mouse" && !menu.contains(document.activeElement)) {
         menu.open = false;
       }
@@ -29,13 +29,13 @@ for (const navigation of document.querySelectorAll(".section-nav")) {
       if (menu.open) closeOtherMenus(menu);
     });
 
-    tab.addEventListener("focusout", event => {
+    tab.addEventListener("focusout", (event) => {
       if (!tab.contains(event.relatedTarget) && !tab.matches(":hover")) {
         menu.open = false;
       }
     });
 
-    tab.addEventListener("keydown", event => {
+    tab.addEventListener("keydown", (event) => {
       if (event.key !== "Escape" || !menu.open) return;
       event.preventDefault();
       menu.open = false;
@@ -43,7 +43,7 @@ for (const navigation of document.querySelectorAll(".section-nav")) {
     });
   }
 
-  document.addEventListener("click", event => {
+  document.addEventListener("click", (event) => {
     closeOtherMenus(event.target.closest(".section-tab > details"));
   });
 }

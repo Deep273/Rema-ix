@@ -1,484 +1,432 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ocenshik-plus — Подбор аналогов</title>
-    <link rel="stylesheet" href="/css/style.css?v=20261007">
-    <link rel="stylesheet" href="/css/report/analogs/analogs.css?v=20261007-4">
-  <link rel="stylesheet" href="/css/mobile/report/analogs/analogs.css?v=1">
-  <link rel="stylesheet" href="/css/section-menu.css?v=13">
-  <link rel="stylesheet" href="/css/mobile/section-menu.css?v=1">
-  <script src="/js/section-menu.js?v=11" defer></script>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..900&amp;display=swap">
-  <link rel="stylesheet" href="/css/typography.css?v=1">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22op%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%236bb8ff%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23235de2%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2217%22%20fill%3D%22url%28%23op%29%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2232%22%20r%3D%2215%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%227%22%2F%3E%3Cpath%20d%3D%22M47%2018v16m-8-8h16%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
-</head>
+    <link rel="stylesheet" href="/css/style.css?v=20261007" />
+    <link rel="stylesheet" href="/css/report/analogs/analogs.css?v=20261007-4" />
+    <link rel="stylesheet" href="/css/mobile/report/analogs/analogs.css?v=1" />
+    <link rel="stylesheet" href="/css/section-menu.css?v=13" />
+    <link rel="stylesheet" href="/css/mobile/section-menu.css?v=1" />
+    <script src="/js/section-menu.js?v=11" defer></script>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400..900&amp;display=swap"
+    />
+    <link rel="stylesheet" href="/css/typography.css?v=1" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22op%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%236bb8ff%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23235de2%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2217%22%20fill%3D%22url%28%23op%29%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2232%22%20r%3D%2215%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%227%22%2F%3E%3Cpath%20d%3D%22M47%2018v16m-8-8h16%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E"
+    />
+  </head>
 
-<body>
-
-<header class="site-header">
-
-    <div class="header-inner">
-
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
         <a href="/index.html" class="brand">
-            <span class="brand-logo"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false" style="display:block;width:100%;height:100%"><circle cx="27" cy="33" r="15" fill="none" stroke="white" stroke-width="6"/><path d="M47 17v16m-8-8h16" fill="none" stroke="white" stroke-width="5" stroke-linecap="round"/></svg></span>
+          <span class="brand-logo"
+            ><svg
+              viewBox="0 0 64 64"
+              aria-hidden="true"
+              focusable="false"
+              style="display: block; width: 100%; height: 100%"
+            >
+              <circle cx="27" cy="33" r="15" fill="none" stroke="white" stroke-width="6" />
+              <path
+                d="M47 17v16m-8-8h16"
+                fill="none"
+                stroke="white"
+                stroke-width="5"
+                stroke-linecap="round"
+              /></svg
+          ></span>
 
-            <span class="brand-copy">
-                <strong>ocenshik-plus</strong>
-                <small>Market intelligence</small>
-            </span>
+          <span class="brand-copy">
+            <strong>ocenshik-plus</strong>
+            <small>Market intelligence</small>
+          </span>
         </a>
 
-       <nav class="section-nav section-nav-actions" aria-label="Отчёты и аналоги">
-         <div class="section-tab">
-           <a class="section-action" href="/report/quarterly/?section=commercial">
-             Отчёт по рынку
-           </a>
-           <details>
-             <summary aria-label="Разделы: Отчёт по рынку">
-             </summary>
-             <div class="section-links">
-               <a data-section="commercial" href="/index.html">
-                 Коммерческая недвижимость
-               </a>
-               <a data-section="residential" href="/report/quarterly/?section=residential">
-                 Жилая недвижимость
-               </a>
-               <a data-section="land" href="/land.html">
-                 Земельные участки
-               </a>
-             </div>
-           </details>
-         </div>
-         <div class="section-tab">
-           <a class="section-action" href="/report/analogs/?section=commercial" aria-current="location">
-             Подбор аналогов
-           </a>
-           <details>
-             <summary aria-label="Разделы: Подбор аналогов">
-             </summary>
-             <div class="section-links">
-               <a data-section="commercial" href="/index.html">
-                 Коммерческая недвижимость
-               </a>
-               <a data-section="residential" href="/report/analogs/?section=residential">
-                 Жилая недвижимость
-               </a>
-               <a data-section="land" href="/land.html">
-                 Земельные участки
-               </a>
-             </div>
-           </details>
-         </div>
-       </nav>
+        <nav class="section-nav section-nav-actions" aria-label="Отчёты и аналоги">
+          <div class="section-tab">
+            <a class="section-action" href="/report/quarterly/?section=commercial">
+              Отчёт по рынку
+            </a>
+            <details>
+              <summary aria-label="Разделы: Отчёт по рынку"> </summary>
+              <div class="section-links">
+                <a data-section="commercial" href="/index.html"> Коммерческая недвижимость </a>
+                <a data-section="residential" href="/report/quarterly/?section=residential">
+                  Жилая недвижимость
+                </a>
+                <a data-section="land" href="/land.html"> Земельные участки </a>
+              </div>
+            </details>
+          </div>
+          <div class="section-tab">
+            <a
+              class="section-action"
+              href="/report/analogs/?section=commercial"
+              aria-current="location"
+            >
+              Подбор аналогов
+            </a>
+            <details>
+              <summary aria-label="Разделы: Подбор аналогов"> </summary>
+              <div class="section-links">
+                <a data-section="commercial" href="/index.html"> Коммерческая недвижимость </a>
+                <a data-section="residential" href="/report/analogs/?section=residential">
+                  Жилая недвижимость
+                </a>
+                <a data-section="land" href="/land.html"> Земельные участки </a>
+              </div>
+            </details>
+          </div>
+        </nav>
         <div class="header-actions">
+          <button class="header-icon" id="themeButton" type="button" aria-label="Переключить тему">
+            ◐
+          </button>
 
-            <button
-                class="header-icon"
-                id="themeButton"
-                type="button"
-                aria-label="Переключить тему">
-                ◐
-            </button>
-
-            <button
-                class="profile"
-                type="button">
-                <span class="profile-avatar">67</span>
-                <span class="profile-name">6767676 М.</span>
-                <span class="profile-arrow">▼</span>
-            </button>
+          <button class="profile" type="button">
+            <span class="profile-avatar">67</span>
+            <span class="profile-name">6767676 М.</span>
+            <span class="profile-arrow">▼</span>
+          </button>
         </div>
-    </div>
-</header>
+      </div>
+    </header>
 
-
-<main class="analogs-page">
-
-    <section class="analogs-hero">
-
+    <main class="analogs-page">
+      <section class="analogs-hero">
         <div class="hero-background">
-            <span class="hero-orb hero-orb-one"></span>
-            <span class="hero-orb hero-orb-two"></span>
-            <span class="hero-grid"></span>
+          <span class="hero-orb hero-orb-one"></span>
+          <span class="hero-orb hero-orb-two"></span>
+          <span class="hero-grid"></span>
         </div>
 
         <div class="hero-content">
+          <div class="hero-badge">
+            <span class="badge-dot"></span>
+            Анализ рынка
+          </div>
 
-            <div class="hero-badge">
-                <span class="badge-dot"></span>
-                Анализ рынка
-            </div>
+          <h1> Подбор аналогов по заданной локации </h1>
 
-            <h1>
-                Подбор аналогов по заданной локации
-            </h1>
-
-            <p>
-                Найдите объявления с нужными параметрами и сравните цены, площади и характеристики.
-            </p>
-
+          <p>
+            Найдите объявления с нужными параметрами и сравните цены, площади и характеристики.
+          </p>
         </div>
 
         <div class="hero-location-card">
+          <div>
+            <span class="location-label"> Текущая локация </span>
 
-            <div>
-                <span class="location-label">
-                    Текущая локация
-                </span>
-
-                <strong id="heroLocation">
-                    Томский район
-                </strong>
-            </div>
-
+            <strong id="heroLocation"> Томский район </strong>
+          </div>
         </div>
+      </section>
 
-    </section>
-
-
-<section class="search-builder">
-    <div class="deal-type-switch">
-    <div class="deal-type-heading">
-        <strong>Тип предложения</strong>
-        <span>Выберите рынок для подбора аналогов</span>
-    </div>
-    <div class="deal-type-buttons">
-        <button type="button" class="deal-type-btn active" data-deal="sale">
-            Продажа
-        </button>
-        <button type="button" class="deal-type-btn" data-deal="rent">
-            Аренда
-        </button>
-    </div>
-</div>
-    <div class="section-heading">
-        <div>
+      <section class="search-builder">
+        <div class="deal-type-switch">
+          <div class="deal-type-heading">
+            <strong>Тип предложения</strong>
+            <span>Выберите рынок для подбора аналогов</span>
+          </div>
+          <div class="deal-type-buttons">
+            <button type="button" class="deal-type-btn active" data-deal="sale"> Продажа </button>
+            <button type="button" class="deal-type-btn" data-deal="rent"> Аренда </button>
+          </div>
+        </div>
+        <div class="section-heading">
+          <div>
             <span class="section-kicker">ПАРАМЕТРЫ ПОИСКА</span>
             <h2>Настройте выборку аналогов</h2>
             <p>
-                Укажите расположение и характеристики объекта,
-                чтобы система сформировала подходящую выборку.
+              Укажите расположение и характеристики объекта, чтобы система сформировала подходящую
+              выборку.
             </p>
-        </div>
+          </div>
 
-        <div class="matching-badge">
+          <div class="matching-badge">
             <span>●</span>
             Автоматический подбор
+          </div>
         </div>
-    </div>
 
-    
-
-    <div class="filter-group">
-
-        <div class="filter-group-heading">
+        <div class="filter-group">
+          <div class="filter-group-heading">
             <div class="filter-group-icon">⌕</div>
             <div>
-                <h3>Основные параметры</h3>
-                <p>Расположение и стоимость объекта</p>
+              <h3>Основные параметры</h3>
+              <p>Расположение и стоимость объекта</p>
             </div>
             <span class="filter-required">ОСНОВНЫЕ</span>
-        </div>
+          </div>
 
-        <div class="form-grid">
-
+          <div class="form-grid">
             <div class="field">
-                <label for="regionInput">Регион</label>
-                <select id="regionInput">
-                    <option value="Томская область" selected>Томская область</option>
-                    <option value="Новосибирская область">Новосибирская область</option>
-                    <option value="Кемеровская область">Кемеровская область</option>
-                    <option value="Алтайский край">Алтайский край</option>
-                </select>
+              <label for="regionInput">Регион</label>
+              <select id="regionInput">
+                <option value="Томская область" selected>Томская область</option>
+                <option value="Новосибирская область">Новосибирская область</option>
+                <option value="Кемеровская область">Кемеровская область</option>
+                <option value="Алтайский край">Алтайский край</option>
+              </select>
             </div>
 
             <div class="field">
-                <label for="districtInput">Район</label>
-                <select id="districtInput">
-                    <option value="Томский район" selected>Томский район</option>
-                    <option value="Асиновский район">Асиновский район</option>
-                    <option value="Шегарский район">Шегарский район</option>
-                    <option value="Зырянский район">Зырянский район</option>
-                    <option value="Кожевниковский район">Кожевниковский район</option>
-                    <option value="Колпашевский район">Колпашевский район</option>
-                </select>
+              <label for="districtInput">Район</label>
+              <select id="districtInput">
+                <option value="Томский район" selected>Томский район</option>
+                <option value="Асиновский район">Асиновский район</option>
+                <option value="Шегарский район">Шегарский район</option>
+                <option value="Зырянский район">Зырянский район</option>
+                <option value="Кожевниковский район">Кожевниковский район</option>
+                <option value="Колпашевский район">Колпашевский район</option>
+              </select>
             </div>
 
             <div class="field">
-    <label id="priceLabel">Цена объекта, ₽</label>
-        <div class="range-inputs">
-            <input type="number" id="priceFrom" placeholder="От">
-            <span>—</span>
-            <input type="number" id="priceTo" placeholder="До">
+              <label id="priceLabel">Цена объекта, ₽</label>
+              <div class="range-inputs">
+                <input type="number" id="priceFrom" placeholder="От" />
+                <span>—</span>
+                <input type="number" id="priceTo" placeholder="До" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label><span id="areaLabel">Площадь, м²</span></label>
+              <div class="range-inputs">
+                <input type="number" id="areaFrom" placeholder="От" />
+                <span>—</span>
+                <input type="number" id="areaTo" placeholder="До" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label id="pricePerMeterLabel">Цена за м², ₽</label>
+              <div class="range-inputs">
+                <input type="number" id="pricePerMeterFrom" placeholder="От" />
+                <span>—</span>
+                <input type="number" id="pricePerMeterTo" placeholder="До" />
+              </div>
+            </div>
+
+            <div class="summary-metric summary-metric-exposure">
+              <span class="summary-metric-label">Средняя экспозиция</span>
+              <strong id="summaryExposure">—</strong>
+              <span class="summary-metric-caption">Средний срок размещения объявления</span>
+            </div>
+          </div>
         </div>
-    </div>
 
-    <div class="field">
-        <label><span id="areaLabel">Площадь, м²</span></label>
-        <div class="range-inputs">
-            <input type="number" id="areaFrom" placeholder="От">
-            <span>—</span>
-            <input type="number" id="areaTo" placeholder="До">
-        </div>
-    </div>
-
-    <div class="field">
-        <label id="pricePerMeterLabel">Цена за м², ₽</label>
-        <div class="range-inputs">
-            <input type="number" id="pricePerMeterFrom" placeholder="От">
-            <span>—</span>
-            <input type="number" id="pricePerMeterTo" placeholder="До">
-        </div>
-    </div>
-
-    <div class="summary-metric summary-metric-exposure">
-        <span class="summary-metric-label">Средняя экспозиция</span>
-        <strong id="summaryExposure">—</strong>
-        <span class="summary-metric-caption">Средний срок размещения объявления</span>
-    </div>
-</div>
-</div>
-
-    <div class="filter-group additional-filter-group" id="additionalFilters">
-
-        <div class="filter-group-heading">
+        <div class="filter-group additional-filter-group" id="additionalFilters">
+          <div class="filter-group-heading">
             <div class="filter-group-icon additional-icon">⚙</div>
 
             <div>
-                <h3>Дополнительные параметры</h3>
-                <p>Уточните характеристики недвижимости</p>
+              <h3>Дополнительные параметры</h3>
+              <p>Уточните характеристики недвижимости</p>
             </div>
 
             <span class="filter-optional">ПО ЖЕЛАНИЮ</span>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Этаж</label>
+              <div class="range-inputs">
+                <input type="number" id="floorFrom" placeholder="От" />
+                <span>—</span>
+                <input type="number" id="floorTo" placeholder="До" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Этажность здания</label>
+              <div class="range-inputs">
+                <input type="number" id="floorsFrom" placeholder="От" />
+                <span>—</span>
+                <input type="number" id="floorsTo" placeholder="До" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Год постройки</label>
+              <div class="range-inputs">
+                <input type="number" id="yearFrom" placeholder="От" />
+                <span>—</span>
+                <input type="number" id="yearTo" placeholder="До" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Высота потолков, м</label>
+              <div class="range-inputs">
+                <input type="number" id="ceilingFrom" placeholder="От" step="0.1" />
+                <span>—</span>
+                <input type="number" id="ceilingTo" placeholder="До" step="0.1" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="conditionFilter">Состояние объекта</label>
+              <select id="conditionFilter">
+                <option value="">Любое состояние</option>
+                <option value="Новое">Новое</option>
+                <option value="Отличное">Отличное</option>
+                <option value="Хорошее">Хорошее</option>
+                <option value="Удовлетворительное">Удовлетворительное</option>
+                <option value="Требует ремонта">Требует ремонта</option>
+              </select>
+            </div>
+
+            <div class="field" id="landVriField" hidden
+              ><label for="vriFilter">Вид разрешённого использования</label
+              ><select id="vriFilter"
+                ><option value="">Любой ВРИ</option></select
+              ></div
+            >
+          </div>
         </div>
 
-        <div class="form-grid">
-
-            <div class="field">
-                <label>Этаж</label>
-                <div class="range-inputs">
-                    <input type="number" id="floorFrom" placeholder="От">
-                    <span>—</span>
-                    <input type="number" id="floorTo" placeholder="До">
-                </div>
-            </div>
-
-            <div class="field">
-                <label>Этажность здания</label>
-                <div class="range-inputs">
-                    <input type="number" id="floorsFrom" placeholder="От">
-                    <span>—</span>
-                    <input type="number" id="floorsTo" placeholder="До">
-                </div>
-            </div>
-
-            <div class="field">
-                <label>Год постройки</label>
-                <div class="range-inputs">
-                    <input type="number" id="yearFrom" placeholder="От">
-                    <span>—</span>
-                    <input type="number" id="yearTo" placeholder="До">
-                </div>
-            </div>
-
-            <div class="field">
-                <label>Высота потолков, м</label>
-                <div class="range-inputs">
-                    <input type="number" id="ceilingFrom" placeholder="От" step="0.1">
-                    <span>—</span>
-                    <input type="number" id="ceilingTo" placeholder="До" step="0.1">
-                </div>
-            </div>
-
-            <div class="field">
-                <label for="conditionFilter">Состояние объекта</label>
-                <select id="conditionFilter">
-                    <option value="">Любое состояние</option>
-                    <option value="Новое">Новое</option>
-                    <option value="Отличное">Отличное</option>
-                    <option value="Хорошее">Хорошее</option>
-                    <option value="Удовлетворительное">Удовлетворительное</option>
-                    <option value="Требует ремонта">Требует ремонта</option>
-                </select>
-            </div>
-
-            <div class="field" id="landVriField" hidden><label for="vriFilter">Вид разрешённого использования</label><select id="vriFilter"><option value="">Любой ВРИ</option></select></div>
-
-        </div>
-
-    </div>
-
-    <div class="search-actions">
-
-        <button type="button" id="findAnalogs" class="primary-search-button">
+        <div class="search-actions">
+          <button type="button" id="findAnalogs" class="primary-search-button">
             <span class="search-button-icon">⌕</span>
             Найти аналоги
-        </button>
+          </button>
 
-        <button type="button" id="resetFilters" class="secondary-button">
-            Сбросить
-        </button>
+          <button type="button" id="resetFilters" class="secondary-button"> Сбросить </button>
+        </div>
+      </section>
 
-    </div>
-
-</section>
-
-
-<div class="analogs-summary-card">
-    <div class="analogs-summary-header">
-        <div class="analogs-summary-title">
+      <div class="analogs-summary-card">
+        <div class="analogs-summary-header">
+          <div class="analogs-summary-title">
             <div class="analogs-summary-icon">
-                <i class="fas fa-chart-pie"></i>
+              <i class="fas fa-chart-pie"></i>
             </div>
 
             <div>
-                <h2>Сводка по найденным объектам</h2>
-                <p>Аналитика по результатам подбора аналогов недвижимости</p>
+              <h2>Сводка по найденным объектам</h2>
+              <p>Аналитика по результатам подбора аналогов недвижимости</p>
             </div>
-        </div>
+          </div>
 
-        <span class="analogs-summary-status">
+          <span class="analogs-summary-status">
             <span class="status-dot"></span>
             Результаты поиска
-        </span>
-    </div>
+          </span>
+        </div>
 
-    <div class="analogs-summary-description">
-        По заданным параметрам система подобрала объекты недвижимости,
-        которые могут использоваться для сравнительного анализа и определения
-        ориентировочной рыночной стоимости.
-    </div>
+        <div class="analogs-summary-description">
+          По заданным параметрам система подобрала объекты недвижимости, которые могут
+          использоваться для сравнительного анализа и определения ориентировочной рыночной
+          стоимости.
+        </div>
 
-    <div class="analogs-summary-metrics">
-        <div class="summary-metric summary-metric-primary">
+        <div class="analogs-summary-metrics">
+          <div class="summary-metric summary-metric-primary">
             <span class="summary-metric-label">Найдено объектов</span>
             <strong id="summaryFoundCount">—</strong>
             <span class="summary-metric-caption">Подходящих объявлений</span>
-        </div>
+          </div>
 
-        <div class="summary-metric">
+          <div class="summary-metric">
             <span class="summary-metric-label">Минимальная цена</span>
             <strong id="summaryMinPrice">—</strong>
             <span class="summary-metric-caption">За квадратный метр</span>
-        </div>
+          </div>
 
-        <div class="summary-metric">
+          <div class="summary-metric">
             <span class="summary-metric-label">Средняя цена</span>
             <strong id="summaryAveragePrice">—</strong>
             <span class="summary-metric-caption">За квадратный метр</span>
-        </div>
+          </div>
 
-        <div class="summary-metric summary-metric-highlight">
+          <div class="summary-metric summary-metric-highlight">
             <span class="summary-metric-label">Медианная цена</span>
             <strong id="summaryMedianPrice">—</strong>
             <span class="summary-metric-caption">За квадратный метр</span>
+          </div>
         </div>
-    </div>
 
-    <div class="analogs-summary-bottom">
-        <div class="summary-bottom-icon">
+        <div class="analogs-summary-bottom">
+          <div class="summary-bottom-icon">
             <i class="fas fa-lightbulb"></i>
-        </div>
+          </div>
 
-        <div>
+          <div>
             <strong>Результаты аналитики</strong>
             <p>
-                Медианная стоимость позволяет оценить типичный уровень цен
-                на рынке и уменьшает влияние отдельных слишком дорогих
-                или дешёвых предложений.
+              Медианная стоимость позволяет оценить типичный уровень цен на рынке и уменьшает
+              влияние отдельных слишком дорогих или дешёвых предложений.
             </p>
+          </div>
         </div>
-    </div>
-</div>
+      </div>
 
-    <p id="resultsNote" hidden>Показаны 100 самых свежих объявлений по заданным фильтрам.</p>
-    <section class="segments analogs-block" id="segmentsSection">
-
+      <p id="resultsNote" hidden>Показаны 100 самых свежих объявлений по заданным фильтрам.</p>
+      <section class="segments analogs-block" id="segmentsSection">
         <div class="section-title">
-
-            <div>
-                <span class="filter-label">
-                    СЕГМЕНТАЦИЯ РЫНКА
-                </span>
-                <h2>
-                    Распределение по площади
-                </h2>
-            </div>
+          <div>
+            <span class="filter-label"> СЕГМЕНТАЦИЯ РЫНКА </span>
+            <h2> Распределение по площади </h2>
+          </div>
         </div>
 
         <div class="segment-grid" id="segmentGrid"></div>
+      </section>
 
-    </section>
-
-    <section class="results-section analogs-block" id="resultsSection">
-
+      <section class="results-section analogs-block" id="resultsSection">
         <div class="list-toolbar">
+          <div class="toolbar-result">
+            <span class="toolbar-dot"></span>
 
-            <div class="toolbar-result">
+            Найденные объекты
+          </div>
 
-                <span class="toolbar-dot"></span>
-
-                Найденные объекты
-
+          <div class="toolbar-side">
+            <div class="toolbar-count">
+              Показано
+              <strong id="paginationFrom">0</strong>–<strong id="paginationTo">0</strong>
+              из
+              <strong id="paginationTotal">0</strong>
             </div>
 
-            <div class="toolbar-side">
-
-                <div class="toolbar-count">
-                    Показано
-                    <strong id="paginationFrom">0</strong>–<strong id="paginationTo">0</strong>
-                    из
-                    <strong id="paginationTotal">0</strong>
-                </div>
-
-                <label class="toolbar-sort">
-                    <span>Сортировка</span>
-                    <select id="sortSelect">
-                        <option value="newest">Сначала новые</option>
-                        <option value="price-asc">Цена за единицу площади ▲</option>
-                        <option value="price-desc">Цена за единицу площади ▼</option>
-                        <option value="area-asc">Площадь ▲</option>
-                        <option value="area-desc">Площадь ▼</option>
-                    </select>
-                </label>
-
-            </div>
-
+            <label class="toolbar-sort">
+              <span>Сортировка</span>
+              <select id="sortSelect">
+                <option value="newest">Сначала новые</option>
+                <option value="price-asc">Цена за единицу площади ▲</option>
+                <option value="price-desc">Цена за единицу площади ▼</option>
+                <option value="area-asc">Площадь ▲</option>
+                <option value="area-desc">Площадь ▼</option>
+              </select>
+            </label>
+          </div>
         </div>
 
+        <div id="analogsList" class="analogs-list"> </div>
 
-        <div
-            id="analogsList"
-            class="analogs-list">
-        </div>
+        <div id="pagination" class="pagination"> </div>
+      </section>
+    </main>
 
+    <div id="toast" class="toast">
+      <div class="toast-icon" id="toastIcon">✓</div>
 
-        <div
-            id="pagination"
-            class="pagination">
-        </div>
-
-    </section>
-
-</main>
-
-
-<div id="toast" class="toast">
-    <div class="toast-icon" id="toastIcon">✓</div>
-
-    <div>
+      <div>
         <strong id="toastTitle">Готово</strong>
         <p id="toastText"></p>
-
+      </div>
     </div>
 
-</div>
-
-
-<script src="/js/script.js?v=20261007"></script>
-<script src="/js/report/analogs/analogs.js?v=20261007-5"></script>
-
-</body>
+    <script src="/js/script.js?v=20261007"></script>
+    <script src="/js/report/analogs/analogs.js?v=20261007-5"></script>
+  </body>
 </html>

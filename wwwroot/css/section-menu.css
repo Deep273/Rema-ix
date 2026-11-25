@@ -1,5 +1,4 @@
 .header-inner > .section-nav {
-
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -65,10 +64,8 @@ body.dark-theme .section-nav {
 }
 
 .section-nav summary::before {
-
   border-width: 0 1.5px 1.5px 0;
   content: "";
-
 }
 
 .section-nav :is(summary, a):focus-visible {
@@ -90,7 +87,6 @@ body.dark-theme .section-nav {
 
   background: var(--menu-surface);
   color: var(--menu-ink);
-
 }
 
 .section-nav details:not([open]) > .section-links {
@@ -104,7 +100,6 @@ body.dark-theme .section-nav {
 
 .section-nav .section-links a,
 .header .section-nav .section-links a {
-
   border-radius: 8px;
   color: inherit;
   font-weight: 600;
@@ -128,7 +123,9 @@ body.dark-theme .section-nav {
   border: 1px solid var(--menu-border);
   border-radius: 18px;
   background: linear-gradient(115deg, #f5f9ff, #e6f0ff);
-  box-shadow: inset 0 1px 0 #fff, 0 5px 18px #16377412;
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 5px 18px #16377412;
 }
 :root.dark .section-nav,
 body.dark-theme .section-nav {
@@ -150,13 +147,15 @@ body.dark-theme .section-nav {
 .section-nav .section-tab:has(> a[aria-current]) {
   background: linear-gradient(122deg, #194bc7 0%, #2165df 58%, #2474df 100%);
   color: #fff;
-  box-shadow: 0 4px 10px #1654d04a, inset 0 1px 0 #ffffff33;
+  box-shadow:
+    0 4px 10px #1654d04a,
+    inset 0 1px 0 #ffffff33;
 }
 .section-nav .section-tab > a,
 .header .section-nav .section-tab > a {
   gap: 8px;
   padding-inline-start: 10px;
-  letter-spacing: -.015em;
+  letter-spacing: -0.015em;
 }
 .section-nav .section-tab > a::before {
   content: "";
@@ -164,7 +163,7 @@ body.dark-theme .section-nav {
   flex: 0 0 17px;
   height: 17px;
   background: currentColor;
-  opacity: .85;
+  opacity: 0.85;
   mask: var(--tab-icon) center / contain no-repeat;
 }
 .section-nav [data-section="commercial"] {
@@ -182,7 +181,7 @@ body.dark-theme .section-nav {
 .section-nav summary {
   width: 34px;
   color: inherit;
-  opacity: .8;
+  opacity: 0.8;
 }
 .section-nav summary:hover {
   opacity: 1;
@@ -194,7 +193,9 @@ body.dark-theme .section-nav {
   min-width: 224px;
   padding: 7px;
   border-radius: 15px;
-  box-shadow: 0 16px 36px #132f6830, 0 2px 6px #132f6818;
+  box-shadow:
+    0 16px 36px #132f6830,
+    0 2px 6px #132f6818;
 }
 .section-nav .section-links a,
 .header .section-nav .section-links a {
@@ -225,7 +226,8 @@ body.dark-theme .section-nav {
   border: 0;
   border-radius: 7px;
   background: currentColor;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m7 10 5 5 5-5' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 19px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m7 10 5 5 5-5' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / 19px no-repeat;
   transform: rotate(0deg);
   transition: transform 180ms ease;
 }
@@ -250,11 +252,13 @@ body.dark-theme .section-nav {
 }
 .section-nav summary:hover::after,
 .section-nav details[open] > summary::after {
-  opacity: .12;
+  opacity: 0.12;
 }
 @media (prefers-reduced-motion: reduce) {
   .section-nav summary::before,
-  .section-nav summary::after { transition: none; }
+  .section-nav summary::after {
+    transition: none;
+  }
 }
 
 .section-nav-actions .section-action::before {

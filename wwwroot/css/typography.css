@@ -9,10 +9,15 @@
 }
 
 body {
-  font: var(--ls-text)/1.5 var(--ls-font);
+  font: var(--ls-text) / 1.5 var(--ls-font);
 }
 
-button, input, select, textarea, option, dialog {
+button,
+input,
+select,
+textarea,
+option,
+dialog {
   font-family: var(--ls-font);
 }
 
@@ -23,13 +28,15 @@ button, input, select, textarea, option, dialog {
 .review h1 {
   font-size: var(--ls-heading);
   line-height: 1.06;
-  letter-spacing: -.045em;
+  letter-spacing: -0.045em;
 }
 
 .land-catalog .intro p,
 .market-report .hero-content p,
 .analogs-hero p,
-.market-report :is(.builder-top, .section-heading, .data-card-header, .chart-header, .history-sector-header) p,
+.market-report
+  :is(.builder-top, .section-heading, .data-card-header, .chart-header, .history-sector-header)
+  p,
 .analogs-page :is(.section-heading, .results-header) p,
 .land-catalog .object-main > p,
 .analog-card p {
@@ -60,6 +67,7 @@ button, input, select, textarea, option, dialog {
 .catalog-hero .search input,
 .land-catalog :is(.field input, .field select, .toolbar-sort select),
 .market-report :is(.input-wrap input, .select-wrap select, .generate-button, .export-button),
-.analogs-page :is(.search-builder input, .search-builder select, .primary-search-button, .sort-block select) {
+.analogs-page
+  :is(.search-builder input, .search-builder select, .primary-search-button, .sort-block select) {
   font-size: var(--ls-control);
 }

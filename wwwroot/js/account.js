@@ -1,58 +1,64 @@
-if (!document.querySelector('link[data-account-style]')) {
-  const style = document.createElement('link');
-  style.rel = 'stylesheet';
-  style.href = '/css/account-controls.css?v=2';
-  style.dataset.accountStyle = '';
+if (!document.querySelector("link[data-account-style]")) {
+  const style = document.createElement("link");
+  style.rel = "stylesheet";
+  style.href = "/css/account-controls.css?v=2";
+  style.dataset.accountStyle = "";
   document.head.append(style);
 }
 (async () => {
-  const response = await fetch('/api/auth/me', { cache: 'no-store' });
-  if (response.status === 401) { location.replace('/login.html'); return; }
+  const response = await fetch("/api/auth/me", { cache: "no-store" });
+  if (response.status === 401) {
+    location.replace("/login.html");
+    return;
+  }
   if (!response.ok) return;
   const { user } = await response.json();
-  const header = document.querySelector('.header-inner');
+  const header = document.querySelector(".header-inner");
   if (!header) return;
-  const group = document.createElement('div');
-  group.className = 'account-controls';
-  group.setAttribute('aria-label', 'Аккаунт и оформление');
-  const avatar = document.createElement('span');
-  avatar.className = 'account-avatar';
-  avatar.setAttribute('aria-hidden', 'true');
+  const group = document.createElement("div");
+  group.className = "account-controls";
+  group.setAttribute("aria-label", "Аккаунт и оформление");
+  const avatar = document.createElement("span");
+  avatar.className = "account-avatar";
+  avatar.setAttribute("aria-hidden", "true");
   avatar.textContent = user.username.slice(0, 1).toUpperCase();
-  const label = document.createElement('a');
-  label.href = '/profile.html';
-  label.title = 'Открыть личный кабинет';
-  label.className = 'account-name';
+  const label = document.createElement("a");
+  label.href = "/profile.html";
+  label.title = "Открыть личный кабинет";
+  label.className = "account-name";
   label.textContent = user.username;
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.textContent = 'Выйти';
-  button.className = 'button outline account-logout';
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = "Выйти";
+  button.className = "button outline account-logout";
   group.append(avatar, label);
-  const theme = document.getElementById('theme');
+  const theme = document.getElementById("theme");
   if (theme) group.append(theme);
   group.append(button);
   header.append(group);
-  button.addEventListener('click', async () => {
+  button.addEventListener("click", async () => {
     button.disabled = true;
     try {
-      const result = await fetch('/api/auth/logout', { method: 'POST' });
-      if (!result.ok) throw Error('logout');
-      location.replace('/login.html');
+      const result = await fetch("/api/auth/logout", { method: "POST" });
+      if (!result.ok) throw Error("logout");
+      location.replace("/login.html");
     } catch {
-      button.textContent = 'Повторить выход';
+      button.textContent = "Повторить выход";
       button.disabled = false;
     }
   });
 })().catch(() => {});
-window.addEventListener('pageshow', event => {
+window.addEventListener("pageshow", (event) => {
   if (event.persisted) location.reload();
 });
 
-
-const stickyHeader = document.querySelector('body > .header, body > .site-header');
-if(stickyHeader) {
-  const measureHeader = () => document.documentElement.style.setProperty('--site-header-height',stickyHeader.getBoundingClientRect().height + 'px');
+const stickyHeader = document.querySelector("body > .header, body > .site-header");
+if (stickyHeader) {
+  const measureHeader = () =>
+    document.documentElement.style.setProperty(
+      "--site-header-height",
+      stickyHeader.getBoundingClientRect().height + "px",
+    );
   new ResizeObserver(measureHeader).observe(stickyHeader);
   measureHeader();
 }

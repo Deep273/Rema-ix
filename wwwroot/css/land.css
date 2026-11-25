@@ -21,7 +21,8 @@
   padding: clamp(19px, 3.5vw, 44px);
   border: 1px solid #4879d6;
   border-radius: 24px;
-  background: radial-gradient(ellipse at 92% 0, #2c70df, transparent 55%),
+  background:
+    radial-gradient(ellipse at 92% 0, #2c70df, transparent 55%),
     linear-gradient(122deg, #10264e, #173d86 70%, #225fca);
   box-shadow: 0 16px 36px rgb(16 49 111 / 22%);
 }
@@ -29,7 +30,7 @@
 .land-catalog .intro h1 {
   color: #fff;
   font-size: clamp(30px, 5vw, 55px);
-  letter-spacing: -.045em;
+  letter-spacing: -0.045em;
 }
 
 .land-catalog .intro :is(p, p strong, .eyebrow) {
@@ -87,7 +88,6 @@
 }
 
 .land-catalog .object-card {
-
   border-inline-start: 3px solid var(--blue);
 }
 
@@ -154,7 +154,9 @@
 .land-catalog .object-card {
   display: flex;
   flex-direction: column;
-  transition: box-shadow .2s ease, border-color .2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .land-catalog .object-card:hover {

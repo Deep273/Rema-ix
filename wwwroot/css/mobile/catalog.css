@@ -1,11 +1,9 @@
-@media(max-width:1050px) {
+@media (max-width: 1050px) {
   .card {
-    
-    
   }
 }
 
-@media(max-width:760px) {
+@media (max-width: 760px) {
   .shell {
     width: calc(100% - 24px);
   }
@@ -51,7 +49,7 @@
     grid-column: 1;
   }
   .filter-layout {
-    grid-template-columns: 135px minmax(0,1fr);
+    grid-template-columns: 135px minmax(0, 1fr);
   }
   .filter-content {
     padding: 13px;
@@ -61,7 +59,7 @@
   }
 }
 
-@media(max-width:420px) {
+@media (max-width: 420px) {
   .heading {
     display: grid;
   }
@@ -75,7 +73,7 @@
     flex-wrap: wrap;
   }
   .filter-layout {
-    grid-template-columns: 100px minmax(0,1fr);
+    grid-template-columns: 100px minmax(0, 1fr);
   }
   .filter-menu {
     padding: 6px;
@@ -93,7 +91,7 @@
   }
 }
 
-@media(max-width:760px) {
+@media (max-width: 760px) {
   .header nav {
     overflow: visible;
     flex-wrap: wrap;
@@ -104,19 +102,19 @@
   }
 }
 
-@media(max-width:760px) {
+@media (max-width: 760px) {
   .card-actions {
     justify-content: flex-start;
   }
 }
 
-@media(max-width:370px) {
+@media (max-width: 370px) {
   .location-address {
     grid-column: 1/-1;
   }
 }
 
-@media(max-width:760px) {
+@media (max-width: 760px) {
   .sidebar.mobile-open {
     display: block;
     margin-bottom: 10px;
@@ -169,7 +167,6 @@
     margin-top: 16px;
     border-radius: 20px;
   }
-
 }
 
 @media (max-width: 400px) {

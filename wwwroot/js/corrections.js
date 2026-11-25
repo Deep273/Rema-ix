@@ -9,10 +9,10 @@ async function request(method, data) {
   const response = await fetch("/api/corrections", {
     method,
     headers: {
-      "Authorization": "Bearer " + login.elements.token.value.trim(),
-      "Content-Type": "application/json"
+      Authorization: "Bearer " + login.elements.token.value.trim(),
+      "Content-Type": "application/json",
     },
-    body: data ? JSON.stringify(data) : undefined
+    body: data ? JSON.stringify(data) : undefined,
   });
   const result = await response.json();
   if (!response.ok) throw Error(result.message);
@@ -34,7 +34,10 @@ async function showRequests() {
     article.append(title, message, date);
 
     if (item.status === "pending") {
-      for (const [status, label] of [["accepted", "Принять"], ["rejected", "Отклонить"]]) {
+      for (const [status, label] of [
+        ["accepted", "Принять"],
+        ["rejected", "Отклонить"],
+      ]) {
         const button = document.createElement("button");
         button.className = "button outline";
         button.textContent = label;
@@ -53,7 +56,7 @@ async function showRequests() {
   }
 }
 
-login.addEventListener("submit", async event => {
+login.addEventListener("submit", async (event) => {
   event.preventDefault();
   try {
     await showRequests();

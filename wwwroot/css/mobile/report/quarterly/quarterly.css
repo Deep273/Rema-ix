@@ -17,7 +17,8 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .market-report :is(.builder-top, .section-heading, .chart-header, .data-card-header, .history-sector-header) {
+  .market-report
+    :is(.builder-top, .section-heading, .chart-header, .data-card-header, .history-sector-header) {
     flex-wrap: wrap;
     gap: 10px;
   }

@@ -1,488 +1,434 @@
-(
-    function () {
+(function () {
+  const section = new URLSearchParams(location.search).get("section") || "land";
+  const isLand = section === "land";
+  const unit = isLand ? "сотку" : "м²";
+  const API = {
+    find: "/api/analog/find",
+  };
 
-    const section = new URLSearchParams(location.search).get("section") || "land";
-    const isLand = section === "land";
-    const unit = isLand ? "сотку" : "м²";
-    const API = {
-        find: "/api/analog/find"
+  const API_LIMIT = 100;
+
+  const PER_PAGE = 4;
+
+  const SEGMENTS = isLand
+    ? [
+        { name: "До 30 соток", match: (area) => area < 30 },
+        { name: "От 30 до 50 соток", match: (area) => area >= 30 && area <= 50 },
+        { name: "Свыше 50 соток", match: (area) => area > 50 },
+      ]
+    : [
+        { name: "До 50 м²", match: (area) => area < 50 },
+        { name: "От 50 до 150 м²", match: (area) => area >= 50 && area <= 150 },
+        { name: "Свыше 150 м²", match: (area) => area > 150 },
+      ];
+
+  const SOURCES = {
+    cian: "ЦИАН",
+    avito: "Авито",
+    "tomsk.ru09": "Tomsk.ru09",
+  };
+
+  const FEATURES = [
+    { key: "hasGas", label: "Газ" },
+    { key: "hasElectricity", label: "Электричество" },
+    { key: "hasWater", label: "Вода" },
+    { key: "hasHouse", label: "Постройки" },
+  ];
+
+  const RESULT_SECTIONS = ["summarySection", "statsSection", "segmentsSection", "resultsSection"];
+
+  const state = {
+    items: [],
+    stats: null,
+    params: null,
+    page: 1,
+    requestId: 0,
+  };
+
+  const $ = (id) => document.getElementById(id);
+
+  const numberFormat = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 });
+  const areaFormat = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 2 });
+
+  function isNumber(value) {
+    return typeof value === "number" && isFinite(value);
+  }
+
+  function toNumber(value) {
+    if (value === null || value === undefined || value === "") return null;
+
+    const number = Number(value);
+
+    return isFinite(number) ? number : null;
+  }
+
+  function formatNumber(value) {
+    return isNumber(value) ? numberFormat.format(value) : "—";
+  }
+
+  function formatPrice(value) {
+    return isNumber(value) ? numberFormat.format(Math.round(value)) + " ₽" : "—";
+  }
+
+  function plural(count, one, few, many) {
+    const mod10 = Math.abs(count) % 10;
+    const mod100 = Math.abs(count) % 100;
+
+    if (mod10 === 1 && mod100 !== 11) return one;
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
+    return many;
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function capitalize(text) {
+    return text ? text.charAt(0).toUpperCase() + text.slice(1) : text;
+  }
+
+  function isSotka(unit) {
+    return !unit || /сот/i.test(unit);
+  }
+
+  function formatArea(area, unit) {
+    if (!isNumber(area)) return "—";
+
+    const value = areaFormat.format(area);
+
+    if (!isSotka(unit)) return `${value} ${unit}`;
+
+    return Number.isInteger(area)
+      ? `${value} ${plural(area, "сотка", "сотки", "соток")}`
+      : `${value} сотки`;
+  }
+
+  function formatDate(isoDate) {
+    if (!isoDate) return "";
+
+    const date = new Date(String(isoDate).slice(0, 10) + "T00:00:00");
+
+    return isNaN(date) ? "" : date.toLocaleDateString("ru-RU");
+  }
+
+  function sourceLabel(source) {
+    return SOURCES[String(source || "").toLowerCase()] || source || "—";
+  }
+
+  function safeUrl(url) {
+    if (!url) return null;
+
+    try {
+      const parsed = new URL(String(url));
+
+      return parsed.protocol === "http:" || parsed.protocol === "https:" ? parsed.href : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function median(values) {
+    if (!values.length) return null;
+
+    const sorted = [...values].sort((a, b) => a - b);
+    const middle = Math.floor(sorted.length / 2);
+
+    return sorted.length % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle];
+  }
+
+  function average(values) {
+    return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
+  }
+
+  function priceStats(items) {
+    const prices = items.map((item) => item.pricePerUnit).filter(isNumber);
+
+    return {
+      count: items.length,
+      priced: prices.length,
+      min: prices.length ? Math.min(...prices) : null,
+      max: prices.length ? Math.max(...prices) : null,
+      average: average(prices),
+      median: median(prices),
+    };
+  }
+
+  function calculateStats(items) {
+    return {
+      ...priceStats(items),
+      segments: SEGMENTS.map((segment) => ({
+        name: segment.name,
+        ...priceStats(items.filter((item) => isNumber(item.area) && segment.match(item.area))),
+      })),
+    };
+  }
+
+  async function readJson(response) {
+    try {
+      return await response.json();
+    } catch {
+      return null;
+    }
+  }
+
+  async function requestAnalogs(params) {
+    const response = await fetch(API.find, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ ...params, section }),
+    });
+
+    const data = await readJson(response);
+
+    if (!response.ok) {
+      throw new Error(data?.message || data?.title || `Сервер вернул ошибку ${response.status}`);
+    }
+
+    if (!Array.isArray(data)) {
+      throw new Error("Сервер вернул ответ в неожиданном формате");
+    }
+
+    return data;
+  }
+
+  function normalizeItem(raw, index) {
+    return {
+      id: raw.id ?? index,
+      title: raw.title || "",
+      exposure: toNumber(raw.exposure),
+      order: index,
+      source: raw.source || "",
+      sourceUrl: safeUrl(raw.sourceUrl),
+      datePublished: raw.datePublished || null,
+      region: raw.region || "",
+      district: raw.district || "",
+      locality: raw.locality || "",
+      address: raw.address || "",
+      price: toNumber(raw.price),
+      pricePerUnit: toNumber(raw.pricePerUnit),
+      area: toNumber(raw.area),
+      areaUnit: raw.areaUnit || "",
+      category: capitalize(raw.categoryLand || (isLand ? "" : raw.objectType) || ""),
+      vri: raw.vri || "",
+      features: FEATURES.filter((feature) => raw[feature.key] === true).map(
+        (feature) => feature.label,
+      ),
+    };
+  }
+
+  let toastResetTimer;
+
+  function notify(title, text, isError = false) {
+    const toast = $("toast");
+    const icon = $("toastIcon");
+
+    toast?.classList.toggle("is-error", isError);
+
+    if (icon) {
+      icon.textContent = isError ? "!" : "✓";
+    }
+
+    if (typeof showToast === "function") {
+      showToast(title, text, isError);
+    }
+
+    clearTimeout(toastResetTimer);
+    toastResetTimer = setTimeout(() => {
+      toast?.classList.remove("is-error");
+      if (icon) icon.textContent = "✓";
+    }, 3200);
+  }
+
+  function readNumber(id) {
+    const value = $(id)?.value.trim();
+
+    return value ? toNumber(value.replace(",", ".")) : null;
+  }
+
+  function checkRange(from, to, title) {
+    if (from !== null && to !== null && from > to) {
+      notify(title, "Значение «От» не может быть больше «До»", true);
+      return false;
+    }
+
+    return true;
+  }
+
+  function readParams() {
+    const params = {
+      region: $("regionInput").value.trim(),
+      district: $("districtInput").value.trim(),
+      minArea: readNumber("areaFrom"),
+      maxArea: readNumber("areaTo"),
+      operation: document.querySelector(".deal-type-btn.active")?.dataset.deal || "sale",
+      minPrice: readNumber("priceFrom"),
+      maxPrice: readNumber("priceTo"),
+      minPricePerUnit: readNumber("pricePerMeterFrom"),
+      maxPricePerUnit: readNumber("pricePerMeterTo"),
+      minFloor: readNumber("floorFrom"),
+      maxFloor: readNumber("floorTo"),
+      minFloors: readNumber("floorsFrom"),
+      maxFloors: readNumber("floorsTo"),
+      minYear: readNumber("yearFrom"),
+      maxYear: readNumber("yearTo"),
+      minCeiling: readNumber("ceilingFrom"),
+      maxCeiling: readNumber("ceilingTo"),
+      condition: $("conditionFilter")?.value,
+      categoryLand: $("categoryFilter")?.value,
+      vri: $("vriFilter")?.value,
     };
 
-                                                                                
-    const API_LIMIT = 100;
+    if (!checkRange(params.minPrice, params.maxPrice, "Неверная цена объекта")) return null;
+    if (!checkRange(params.minArea, params.maxArea, "Неверная площадь")) return null;
+    if (!checkRange(params.minPricePerUnit, params.maxPricePerUnit, "Неверная цена")) return null;
 
-    const PER_PAGE = 4;
+    return params;
+  }
 
-                                                                             
-    const SEGMENTS = isLand ? [
-        { name: "До 30 соток", match: area => area < 30 },
-        { name: "От 30 до 50 соток", match: area => area >= 30 && area <= 50 },
-        { name: "Свыше 50 соток", match: area => area > 50 }
-    ] : [
-        { name: "До 50 м²", match: area => area < 50 },
-        { name: "От 50 до 150 м²", match: area => area >= 50 && area <= 150 },
-        { name: "Свыше 150 м²", match: area => area > 150 }
-    ];
+  let findButtonHtml = "";
 
-                                                    
-    const SOURCES = {
-        "cian": "ЦИАН",
-        "avito": "Авито",
-        "tomsk.ru09": "Tomsk.ru09"
+  function setLoading(loading) {
+    const button = $("findAnalogs");
+
+    if (button) {
+      button.disabled = loading;
+      button.innerHTML = loading
+        ? `<span class="search-button-icon">⌕</span> Поиск…`
+        : findButtonHtml;
+    }
+
+    RESULT_SECTIONS.forEach((id) => {
+      $(id)?.classList.toggle("is-loading", loading);
+    });
+  }
+
+  async function findAnalogs(options = {}) {
+    const params = readParams();
+
+    if (!params) return;
+
+    const requestId = ++state.requestId;
+
+    setLoading(true);
+
+    try {
+      const data = await requestAnalogs(params);
+
+      if (requestId !== state.requestId) return;
+
+      state.params = params;
+      state.items = data.map(normalizeItem);
+      state.stats = calculateStats(state.items);
+      state.page = 1;
+
+      applySort();
+      renderAll();
+
+      if (!options.silent) {
+        const count = state.items.length;
+
+        notify(
+          count ? "Аналоги подобраны" : "Аналоги не найдены",
+          count
+            ? `Найдено ${formatNumber(count)} ${plural(count, "объявление", "объявления", "объявлений")}`
+            : "Измените параметры поиска и попробуйте ещё раз",
+          !count,
+        );
+      }
+    } catch (error) {
+      if (requestId !== state.requestId) return;
+
+      const message =
+        error instanceof TypeError
+          ? "API недоступен. Проверьте, что сервер запущен."
+          : error.message;
+
+      notify("Не удалось подобрать аналоги", message, true);
+
+      if (!state.params) {
+        renderListMessage("!", "Не удалось загрузить аналоги", message);
+      }
+    } finally {
+      if (requestId === state.requestId) {
+        setLoading(false);
+      }
+    }
+  }
+
+  function compareBy(key, direction) {
+    return (a, b) => {
+      const left = a[key];
+      const right = b[key];
+
+      if (left === right) return a.order - b.order;
+      if (left === null) return 1;
+      if (right === null) return -1;
+
+      return (left - right) * direction || a.order - b.order;
     };
-
-    const FEATURES = [
-        { key: "hasGas", label: "Газ" },
-        { key: "hasElectricity", label: "Электричество" },
-        { key: "hasWater", label: "Вода" },
-        { key: "hasHouse", label: "Постройки" }
-    ];
-
-    const RESULT_SECTIONS = [
-        "summarySection",
-        "statsSection",
-        "segmentsSection",
-        "resultsSection"
-    ];
-
-    const state = {
-        items: [],
-        stats: null,
-        params: null,
-        page: 1,
-        requestId: 0
-    };
-
-    const $ = (id) => document.getElementById(id);
-
-    const numberFormat = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 });
-    const areaFormat = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 2 });
-
-
-                                                                
-                  
-                                                                
-
-    function isNumber(value) {
-        return typeof value === "number" && isFinite(value);
-    }
-
-    function toNumber(value) {
-        if (value === null || value === undefined || value === "") return null;
-
-        const number = Number(value);
-
-        return isFinite(number) ? number : null;
-    }
-
-    function formatNumber(value) {
-        return isNumber(value) ? numberFormat.format(value) : "—";
-    }
-
-    function formatPrice(value) {
-        return isNumber(value) ? numberFormat.format(Math.round(value)) + " ₽" : "—";
-    }
-
-    function plural(count, one, few, many) {
-        const mod10 = Math.abs(count) % 10;
-        const mod100 = Math.abs(count) % 100;
-
-        if (mod10 === 1 && mod100 !== 11) return one;
-        if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
-        return many;
-    }
-
-    function escapeHtml(value) {
-        return String(value ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;");
-    }
-
-    function capitalize(text) {
-        return text ? text.charAt(0).toUpperCase() + text.slice(1) : text;
-    }
-
-    function isSotka(unit) {
-        return !unit || /сот/i.test(unit);
-    }
-
-    function formatArea(area, unit) {
-        if (!isNumber(area)) return "—";
-
-        const value = areaFormat.format(area);
-
-        if (!isSotka(unit)) return `${value} ${unit}`;
-
-                                              
-        return Number.isInteger(area)
-            ? `${value} ${plural(area, "сотка", "сотки", "соток")}`
-            : `${value} сотки`;
-    }
-
-    function formatDate(isoDate) {
-        if (!isoDate) return "";
-
-        const date = new Date(String(isoDate).slice(0, 10) + "T00:00:00");
-
-        return isNaN(date) ? "" : date.toLocaleDateString("ru-RU");
-    }
-
-    function sourceLabel(source) {
-        return SOURCES[String(source || "").toLowerCase()] || source || "—";
-    }
-
-                                                                                  
-    function safeUrl(url) {
-        if (!url) return null;
-
-        try {
-            const parsed = new URL(String(url));
-
-            return parsed.protocol === "http:" || parsed.protocol === "https:"
-                ? parsed.href
-                : null;
-        } catch {
-            return null;
-        }
-    }
-
-
-                                                                
-              
-                                                                
-
-    function median(values) {
-        if (!values.length) return null;
-
-        const sorted = [...values].sort((a, b) => a - b);
-        const middle = Math.floor(sorted.length / 2);
-
-        return sorted.length % 2 === 0
-            ? (sorted[middle - 1] + sorted[middle]) / 2
-            : sorted[middle];
-    }
-
-    function average(values) {
-        return values.length
-            ? values.reduce((sum, value) => sum + value, 0) / values.length
-            : null;
-    }
-
-    function priceStats(items) {
-        const prices = items
-            .map(item => item.pricePerUnit)
-            .filter(isNumber);
-
-        return {
-            count: items.length,
-            priced: prices.length,
-            min: prices.length ? Math.min(...prices) : null,
-            max: prices.length ? Math.max(...prices) : null,
-            average: average(prices),
-            median: median(prices)
-        };
-    }
-
-    function calculateStats(items) {
-        return {
-            ...priceStats(items),
-            segments: SEGMENTS.map(segment => ({
-                name: segment.name,
-                ...priceStats(
-                    items.filter(item => isNumber(item.area) && segment.match(item.area))
-                )
-            }))
-        };
-    }
-
-
-                                                                
-       
-                                                                
-
-    async function readJson(response) {
-        try {
-            return await response.json();
-        } catch {
-            return null;
-        }
-    }
-
-                                                                                         
-    async function requestAnalogs(params) {
-        const response = await fetch(API.find, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify({ ...params, section })
-        });
-
-        const data = await readJson(response);
-
-        if (!response.ok) {
-            throw new Error(
-                data?.message || data?.title || `Сервер вернул ошибку ${response.status}`
-            );
-        }
-
-        if (!Array.isArray(data)) {
-            throw new Error("Сервер вернул ответ в неожиданном формате");
-        }
-
-        return data;
-    }
-
-    function normalizeItem(raw, index) {
-        return {
-            id: raw.id ?? index,
-            title: raw.title || "",
-            exposure: toNumber(raw.exposure),
-            order: index,
-            source: raw.source || "",
-            sourceUrl: safeUrl(raw.sourceUrl),
-            datePublished: raw.datePublished || null,
-            region: raw.region || "",
-            district: raw.district || "",
-            locality: raw.locality || "",
-            address: raw.address || "",
-            price: toNumber(raw.price),
-            pricePerUnit: toNumber(raw.pricePerUnit),
-            area: toNumber(raw.area),
-            areaUnit: raw.areaUnit || "",
-            category: capitalize(raw.categoryLand || (isLand ? "" : raw.objectType) || ""),
-            vri: raw.vri || "",
-            features: FEATURES
-                .filter(feature => raw[feature.key] === true)
-                .map(feature => feature.label)
-        };
-    }
-
-
-                                                                
-         
-                                                                
-
-    let toastResetTimer;
-
-    function notify(title, text, isError = false) {
-        const toast = $("toast");
-        const icon = $("toastIcon");
-
-        toast?.classList.toggle("is-error", isError);
-
-        if (icon) {
-            icon.textContent = isError ? "!" : "✓";
-        }
-
-        if (typeof showToast === "function") {
-            showToast(title, text, isError);
-        }
-
-        clearTimeout(toastResetTimer);
-        toastResetTimer = setTimeout(() => {
-            toast?.classList.remove("is-error");
-            if (icon) icon.textContent = "✓";
-        }, 3200);
-    }
-
-    function readNumber(id) {
-        const value = $(id)?.value.trim();
-
-        return value ? toNumber(value.replace(",", ".")) : null;
-    }
-
-    function checkRange(from, to, title) {
-        if (from !== null && to !== null && from > to) {
-            notify(title, "Значение «От» не может быть больше «До»", true);
-            return false;
-        }
-
-        return true;
-    }
-
-    function readParams() {
-        const params = {
-            region: $("regionInput").value.trim(),
-            district: $("districtInput").value.trim(),
-            minArea: readNumber("areaFrom"),
-            maxArea: readNumber("areaTo"),
-            operation: document.querySelector(".deal-type-btn.active")?.dataset.deal || "sale",
-            minPrice: readNumber("priceFrom"),
-            maxPrice: readNumber("priceTo"),
-            minPricePerUnit: readNumber("pricePerMeterFrom"),
-            maxPricePerUnit: readNumber("pricePerMeterTo"),
-            minFloor: readNumber("floorFrom"),
-            maxFloor: readNumber("floorTo"),
-            minFloors: readNumber("floorsFrom"),
-            maxFloors: readNumber("floorsTo"),
-            minYear: readNumber("yearFrom"),
-            maxYear: readNumber("yearTo"),
-            minCeiling: readNumber("ceilingFrom"),
-            maxCeiling: readNumber("ceilingTo"),
-            condition: $("conditionFilter")?.value,
-            categoryLand: $("categoryFilter")?.value,
-            vri: $("vriFilter")?.value
-        };
-
-        if (!checkRange(params.minPrice, params.maxPrice, "Неверная цена объекта")) return null;
-        if (!checkRange(params.minArea, params.maxArea, "Неверная площадь")) return null;
-        if (!checkRange(params.minPricePerUnit, params.maxPricePerUnit, "Неверная цена")) return null;
-
-        return params;
-    }
-
-    let findButtonHtml = "";
-
-    function setLoading(loading) {
-        const button = $("findAnalogs");
-
-        if (button) {
-            button.disabled = loading;
-            button.innerHTML = loading
-                ? `<span class="search-button-icon">⌕</span> Поиск…`
-                : findButtonHtml;
-        }
-
-        RESULT_SECTIONS.forEach(id => {
-            $(id)?.classList.toggle("is-loading", loading);
-        });
-    }
-
-    async function findAnalogs(options = {}) {
-        const params = readParams();
-
-        if (!params) return;
-
-        const requestId = ++state.requestId;
-
-        setLoading(true);
-
-        try {
-            const data = await requestAnalogs(params);
-
-            if (requestId !== state.requestId) return;
-
-            state.params = params;
-            state.items = data.map(normalizeItem);
-            state.stats = calculateStats(state.items);
-            state.page = 1;
-
-            applySort();
-            renderAll();
-
-            if (!options.silent) {
-                const count = state.items.length;
-
-                notify(
-                    count ? "Аналоги подобраны" : "Аналоги не найдены",
-                    count
-                        ? `Найдено ${formatNumber(count)} ${plural(count, "объявление", "объявления", "объявлений")}`
-                        : "Измените параметры поиска и попробуйте ещё раз",
-                    !count
-                );
-            }
-
-        } catch (error) {
-            if (requestId !== state.requestId) return;
-
-            const message = error instanceof TypeError
-                ? "API недоступен. Проверьте, что сервер запущен."
-                : error.message;
-
-            notify("Не удалось подобрать аналоги", message, true);
-
-                                                                                         
-            if (!state.params) {
-                renderListMessage("!", "Не удалось загрузить аналоги", message);
-            }
-
-        } finally {
-            if (requestId === state.requestId) {
-                setLoading(false);
-            }
-        }
-    }
-
-
-                                                                
-              
-                                                                
-
-                                                                                  
-    function compareBy(key, direction) {
-        return (a, b) => {
-            const left = a[key];
-            const right = b[key];
-
-            if (left === right) return a.order - b.order;
-            if (left === null) return 1;
-            if (right === null) return -1;
-
-            return (left - right) * direction || a.order - b.order;
-        };
-    }
-
-    const SORTERS = {
-        "newest": (a, b) => a.order - b.order,
-        "price-asc": compareBy("pricePerUnit", 1),
-        "price-desc": compareBy("pricePerUnit", -1),
-        "area-asc": compareBy("area", 1),
-        "area-desc": compareBy("area", -1)
-    };
-
-    function applySort() {
-        const sorter = SORTERS[$("sortSelect")?.value] || SORTERS.newest;
-
-        state.items.sort(sorter);
-    }
-
-
-                                                                
-             
-                                                                
-
-    function renderAll() {
-        renderLocation();
-        renderSummary();
-        renderSegments();
-        renderCards();
-    }
-
-    function renderLocation() {
-        const { district, region } = state.params;
-
-        $("heroLocation").textContent = district || region || "Все территории";
-    }
-
-    function pricedCaption(stats) {
-        if (!stats.count) return "по найденным объектам";
-
-        return stats.priced === stats.count
-            ? "по найденным объектам"
-            : `по ${formatNumber(stats.priced)} из ${formatNumber(stats.count)} объектов с ценой`;
-    }
-
-    function renderSummary() {
-        const stats = state.stats;
-        const limited = stats.count >= API_LIMIT;
-
-        const exposures = state.items.map(item => item.exposure).filter(isNumber);
-        $("summaryExposure").textContent = exposures.length
-            ? formatNumber(exposures.reduce((sum, value) => sum + value, 0) / exposures.length) + " мес."
-            : "—";
-        $("summaryFoundCount").textContent = formatNumber(stats.count);
-        $("summaryMinPrice").textContent = formatPrice(stats.min);
-        $("summaryAveragePrice").textContent = formatPrice(stats.average);
-        $("summaryMedianPrice").textContent = formatPrice(stats.median);
-        $("resultsNote").hidden = !limited;
-    }
-
-    function renderSegments() {
-        $("segmentGrid").innerHTML = state.stats.segments.map((segment, index) => `
+  }
+
+  const SORTERS = {
+    newest: (a, b) => a.order - b.order,
+    "price-asc": compareBy("pricePerUnit", 1),
+    "price-desc": compareBy("pricePerUnit", -1),
+    "area-asc": compareBy("area", 1),
+    "area-desc": compareBy("area", -1),
+  };
+
+  function applySort() {
+    const sorter = SORTERS[$("sortSelect")?.value] || SORTERS.newest;
+
+    state.items.sort(sorter);
+  }
+
+  function renderAll() {
+    renderLocation();
+    renderSummary();
+    renderSegments();
+    renderCards();
+  }
+
+  function renderLocation() {
+    const { district, region } = state.params;
+
+    $("heroLocation").textContent = district || region || "Все территории";
+  }
+
+  function pricedCaption(stats) {
+    if (!stats.count) return "по найденным объектам";
+
+    return stats.priced === stats.count
+      ? "по найденным объектам"
+      : `по ${formatNumber(stats.priced)} из ${formatNumber(stats.count)} объектов с ценой`;
+  }
+
+  function renderSummary() {
+    const stats = state.stats;
+    const limited = stats.count >= API_LIMIT;
+
+    const exposures = state.items.map((item) => item.exposure).filter(isNumber);
+    $("summaryExposure").textContent = exposures.length
+      ? formatNumber(exposures.reduce((sum, value) => sum + value, 0) / exposures.length) + " мес."
+      : "—";
+    $("summaryFoundCount").textContent = formatNumber(stats.count);
+    $("summaryMinPrice").textContent = formatPrice(stats.min);
+    $("summaryAveragePrice").textContent = formatPrice(stats.average);
+    $("summaryMedianPrice").textContent = formatPrice(stats.median);
+    $("resultsNote").hidden = !limited;
+  }
+
+  function renderSegments() {
+    $("segmentGrid").innerHTML = state.stats.segments
+      .map(
+        (segment, index) => `
             <article class="segment-card${segment.priced ? "" : " is-empty"}">
 
                 <div class="segment-top">
@@ -503,11 +449,13 @@
                 </div>
 
             </article>
-        `).join("");
-    }
+        `,
+      )
+      .join("");
+  }
 
-    function renderListMessage(icon, title, text) {
-        $("analogsList").innerHTML = `
+  function renderListMessage(icon, title, text) {
+    $("analogsList").innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">${escapeHtml(icon)}</div>
                 <h3>${escapeHtml(title)}</h3>
@@ -515,41 +463,42 @@
             </div>
         `;
 
-        updatePagination(0);
+    updatePagination(0);
+  }
+
+  function itemAddress(item) {
+    return (
+      item.address ||
+      [item.locality, item.district, item.region].filter(Boolean).join(", ") ||
+      "Адрес не указан"
+    );
+  }
+
+  function medianDeviation(item) {
+    const base = state.stats.median;
+
+    if (!isNumber(item.pricePerUnit) || !isNumber(base) || base <= 0 || state.stats.priced < 2) {
+      return "";
     }
 
-    function itemAddress(item) {
-        return item.address
-            || [item.locality, item.district, item.region].filter(Boolean).join(", ")
-            || "Адрес не указан";
+    const delta = Math.round(((item.pricePerUnit - base) / base) * 100);
+
+    if (delta === 0) {
+      return `<small class="median-deviation">на уровне медианы</small>`;
     }
 
-                                                          
-    function medianDeviation(item) {
-        const base = state.stats.median;
-
-        if (!isNumber(item.pricePerUnit) || !isNumber(base) || base <= 0 || state.stats.priced < 2) {
-            return "";
-        }
-
-        const delta = Math.round((item.pricePerUnit - base) / base * 100);
-
-        if (delta === 0) {
-            return `<small class="median-deviation">на уровне медианы</small>`;
-        }
-
-        return `
+    return `
             <small class="median-deviation ${delta > 0 ? "above" : "below"}">
                 ${delta > 0 ? "↑" : "↓"} на ${Math.abs(delta)}% ${delta > 0 ? "выше" : "ниже"} медианы
             </small>
         `;
-    }
+  }
 
-    function renderCard(item, number) {
-        const date = formatDate(item.datePublished);
-        const unitLabel = isSotka(item.areaUnit) ? "сотка" : item.areaUnit;
+  function renderCard(item, number) {
+    const date = formatDate(item.datePublished);
+    const unitLabel = isSotka(item.areaUnit) ? "сотка" : item.areaUnit;
 
-        return `
+    return `
             <article class="analog-card">
 
                 <div class="analog-card-top">
@@ -592,11 +541,15 @@
 
                 </div>
 
-                ${item.features.length ? `
+                ${
+                  item.features.length
+                    ? `
                     <div class="analog-tags">
-                        ${item.features.map(feature => `<span>${escapeHtml(feature)}</span>`).join("")}
+                        ${item.features.map((feature) => `<span>${escapeHtml(feature)}</span>`).join("")}
                     </div>
-                ` : ""}
+                `
+                    : ""
+                }
 
 
                 <div class="analog-price">
@@ -620,7 +573,9 @@
                         Источник: <strong>${escapeHtml(sourceLabel(item.source))}</strong>
                     </span>
 
-                    ${item.sourceUrl ? `
+                    ${
+                      item.sourceUrl
+                        ? `
                         <a
                             class="details-button"
                             href="${escapeHtml(item.sourceUrl)}"
@@ -630,75 +585,70 @@
                             Открыть объявление
                             <span>→</span>
                         </a>
-                    ` : ""}
+                    `
+                        : ""
+                    }
 
                 </div>
 
             </article>
         `;
+  }
+
+  function renderCards() {
+    const total = state.items.length;
+
+    if (!total) {
+      renderListMessage(
+        "⌕",
+        "Аналоги не найдены",
+        "Измените параметры поиска. Регион и район должны совпадать с названиями в базе, например «Томская область» и «Томский район».",
+      );
+      return;
     }
 
-    function renderCards() {
-        const total = state.items.length;
+    const totalPages = Math.ceil(total / PER_PAGE);
 
-        if (!total) {
-            renderListMessage(
-                "⌕",
-                "Аналоги не найдены",
-                "Измените параметры поиска. Регион и район должны совпадать с названиями в базе, например «Томская область» и «Томский район»."
-            );
-            return;
-        }
+    state.page = Math.min(Math.max(1, state.page), totalPages);
 
-        const totalPages = Math.ceil(total / PER_PAGE);
+    const start = (state.page - 1) * PER_PAGE;
 
-        state.page = Math.min(Math.max(1, state.page), totalPages);
+    $("analogsList").innerHTML = state.items
+      .slice(start, start + PER_PAGE)
+      .map((item, index) => renderCard(item, start + index + 1))
+      .join("");
 
-        const start = (state.page - 1) * PER_PAGE;
+    updatePagination(total);
+  }
 
-        $("analogsList").innerHTML = state.items
-            .slice(start, start + PER_PAGE)
-            .map((item, index) => renderCard(item, start + index + 1))
-            .join("");
-
-        updatePagination(total);
+  function pageList(current, total) {
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, index) => index + 1);
     }
 
+    let from = Math.max(2, Math.min(current - 1, total - 4));
+    let to = Math.min(total - 1, Math.max(current + 1, 5));
 
-                                                                
-             
-                                                                
+    if (from === 3) from = 2;
+    if (to === total - 2) to = total - 1;
 
-                     
-    function pageList(current, total) {
-        if (total <= 7) {
-            return Array.from({ length: total }, (_, index) => index + 1);
-        }
+    const pages = [1];
 
-        let from = Math.max(2, Math.min(current - 1, total - 4));
-        let to = Math.min(total - 1, Math.max(current + 1, 5));
+    if (from > 2) pages.push(null);
 
-                                                                 
-        if (from === 3) from = 2;
-        if (to === total - 2) to = total - 1;
-
-        const pages = [1];
-
-        if (from > 2) pages.push(null);
-
-        for (let page = from; page <= to; page++) {
-            pages.push(page);
-        }
-
-        if (to < total - 1) pages.push(null);
-
-        pages.push(total);
-
-        return pages;
+    for (let page = from; page <= to; page++) {
+      pages.push(page);
     }
 
-    function pageButton(label, page, options = {}) {
-        return `
+    if (to < total - 1) pages.push(null);
+
+    pages.push(total);
+
+    return pages;
+  }
+
+  function pageButton(label, page, options = {}) {
+    return `
             <button
                 type="button"
                 class="page-button${options.active ? " active" : ""}"
@@ -707,231 +657,243 @@
                 ${options.title ? `aria-label="${options.title}"` : ""}
             >${label}</button>
         `;
+  }
+
+  function updatePagination(total) {
+    const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+    const from = total ? (state.page - 1) * PER_PAGE + 1 : 0;
+    const to = Math.min(state.page * PER_PAGE, total);
+
+    $("paginationFrom").textContent = from;
+    $("paginationTo").textContent = to;
+    $("paginationTotal").textContent = total;
+
+    const pagination = $("pagination");
+
+    if (totalPages <= 1) {
+      pagination.innerHTML = "";
+      return;
     }
 
-    function updatePagination(total) {
-        const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
-        const from = total ? (state.page - 1) * PER_PAGE + 1 : 0;
-        const to = Math.min(state.page * PER_PAGE, total);
+    pagination.innerHTML = [
+      pageButton("‹", state.page - 1, { disabled: state.page === 1, title: "Предыдущая страница" }),
+      ...pageList(state.page, totalPages).map((page) =>
+        page === null
+          ? `<span class="page-ellipsis">…</span>`
+          : pageButton(page, page, { active: page === state.page }),
+      ),
+      pageButton("›", state.page + 1, {
+        disabled: state.page === totalPages,
+        title: "Следующая страница",
+      }),
+    ].join("");
+  }
 
-        $("paginationFrom").textContent = from;
-        $("paginationTo").textContent = to;
-        $("paginationTotal").textContent = total;
+  function goToPage(page) {
+    if (page === state.page) return;
 
-        const pagination = $("pagination");
+    const pagination = $("pagination");
+    const before = pagination.getBoundingClientRect().top;
 
-        if (totalPages <= 1) {
-            pagination.innerHTML = "";
-            return;
-        }
+    state.page = page;
+    renderCards();
 
-        pagination.innerHTML = [
-            pageButton("‹", state.page - 1, { disabled: state.page === 1, title: "Предыдущая страница" }),
-            ...pageList(state.page, totalPages).map(page =>
-                page === null
-                    ? `<span class="page-ellipsis">…</span>`
-                    : pageButton(page, page, { active: page === state.page })
-            ),
-            pageButton("›", state.page + 1, { disabled: state.page === totalPages, title: "Следующая страница" })
-        ].join("");
+    const shift = pagination.getBoundingClientRect().top - before;
+
+    if (shift) {
+      window.scrollBy({ top: shift, behavior: "instant" });
     }
+  }
 
-    function goToPage(page) {
-        if (page === state.page) return;
+  function syncQuickFilters() {
+    const from = $("areaFrom").value;
+    const to = $("areaTo").value;
 
-                                                                          
-                                                         
-        const pagination = $("pagination");
-        const before = pagination.getBoundingClientRect().top;
+    document.querySelectorAll(".quick-filter").forEach((button) => {
+      button.classList.toggle(
+        "active",
+        button.dataset.areaFrom === from && button.dataset.areaTo === to,
+      );
+    });
+  }
 
-        state.page = page;
-        renderCards();
+  function initQuickFilters() {
+    document.querySelectorAll(".quick-filter").forEach((button) => {
+      button.addEventListener("click", () => {
+        $("areaFrom").value = button.dataset.areaFrom;
+        $("areaTo").value = button.dataset.areaTo;
 
-        const shift = pagination.getBoundingClientRect().top - before;
-
-        if (shift) {
-            window.scrollBy({ top: shift, behavior: "instant" });
-        }
-    }
-
-
-                                                                
-           
-                                                                
-
-    function syncQuickFilters() {
-        const from = $("areaFrom").value;
-        const to = $("areaTo").value;
-
-        document.querySelectorAll(".quick-filter").forEach(button => {
-            button.classList.toggle(
-                "active",
-                button.dataset.areaFrom === from && button.dataset.areaTo === to
-            );
-        });
-    }
-
-    function initQuickFilters() {
-        document.querySelectorAll(".quick-filter").forEach(button => {
-            button.addEventListener("click", () => {
-                $("areaFrom").value = button.dataset.areaFrom;
-                $("areaTo").value = button.dataset.areaTo;
-
-                syncQuickFilters();
-                findAnalogs();
-            });
-        });
-
-        ["areaFrom", "areaTo"].forEach(id => {
-            $(id).addEventListener("input", syncQuickFilters);
-        });
-    }
-
-    function resetFilters() {
-        document.querySelectorAll(".search-builder input").forEach(input => {
-            input.value = input.defaultValue;
-        });
-
-        document.querySelectorAll(".search-builder select").forEach(select => {
-            const index = [...select.options].findIndex(option => option.defaultSelected);
-            select.selectedIndex = Math.max(0, index);
-        });
-
-        $("regionInput").dispatchEvent(new Event("resetDistricts"));
         syncQuickFilters();
         findAnalogs();
+      });
+    });
+
+    ["areaFrom", "areaTo"].forEach((id) => {
+      $(id).addEventListener("input", syncQuickFilters);
+    });
+  }
+
+  function resetFilters() {
+    document.querySelectorAll(".search-builder input").forEach((input) => {
+      input.value = input.defaultValue;
+    });
+
+    document.querySelectorAll(".search-builder select").forEach((select) => {
+      const index = [...select.options].findIndex((option) => option.defaultSelected);
+      select.selectedIndex = Math.max(0, index);
+    });
+
+    $("regionInput").dispatchEvent(new Event("resetDistricts"));
+    syncQuickFilters();
+    findAnalogs();
+  }
+
+  async function init() {
+    const findButton = $("findAnalogs");
+    $("areaLabel").textContent = "Площадь, " + (isLand ? "сотки" : "м²");
+    $("pricePerMeterLabel").textContent = "Цена за " + unit + ", ₽";
+    if (isLand) {
+      $("landVriField").hidden = false;
+      for (const id of ["floorFrom", "floorsFrom", "yearFrom", "ceilingFrom", "conditionFilter"]) {
+        $(id)?.closest(".field")?.setAttribute("hidden", "");
+      }
     }
 
-    async function init() {
-        const findButton = $("findAnalogs");
-        $("areaLabel").textContent = "Площадь, " + (isLand ? "сотки" : "м²");
-        $("pricePerMeterLabel").textContent = "Цена за " + unit + ", ₽";
-        if (isLand) {
-            $("landVriField").hidden = false;
-            for (const id of ["floorFrom", "floorsFrom", "yearFrom", "ceilingFrom", "conditionFilter"]) {
-                $(id)?.closest(".field")?.setAttribute("hidden", "");
-            }
-        }
+    findButtonHtml = findButton.innerHTML;
 
-        findButtonHtml = findButton.innerHTML;
+    findButton.addEventListener("click", () => findAnalogs());
+    $("resetFilters").addEventListener("click", resetFilters);
 
-        findButton.addEventListener("click", () => findAnalogs());
-        $("resetFilters").addEventListener("click", resetFilters);
+    document.querySelectorAll(".search-builder input").forEach((input) => {
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") findAnalogs();
+      });
+    });
 
-                                                                    
-        document.querySelectorAll(".search-builder input").forEach(input => {
-            input.addEventListener("keydown", event => {
-                if (event.key === "Enter") findAnalogs();
-            });
-        });
+    ["categoryFilter", "vriFilter", "conditionFilter"].forEach((id) => {
+      $(id)?.addEventListener("change", () => findAnalogs());
+    });
 
-        ["categoryFilter", "vriFilter", "conditionFilter"].forEach(id => {
-            $(id)?.addEventListener("change", () => findAnalogs());
-        });
+    $("sortSelect").addEventListener("change", () => {
+      if (!state.params) return;
 
-        $("sortSelect").addEventListener("change", () => {
-            if (!state.params) return;
+      applySort();
+      state.page = 1;
+      renderCards();
+    });
 
-            applySort();
-            state.page = 1;
-            renderCards();
-        });
+    $("pagination").addEventListener("click", (event) => {
+      const button = event.target.closest(".page-button");
 
-        $("pagination").addEventListener("click", event => {
-            const button = event.target.closest(".page-button");
+      if (!button || button.disabled) return;
 
-            if (!button || button.disabled) return;
+      goToPage(Number(button.dataset.page));
+    });
 
-            goToPage(Number(button.dataset.page));
-        });
+    document.addEventListener("dealTypeChanged", () => findAnalogs());
+    try {
+      const response = await fetch("/api/meta/filters?section=" + encodeURIComponent(section));
+      if (response.ok) {
+        const data = await response.json();
+        const condition = $("conditionFilter");
+        condition.replaceChildren(
+          new Option("Любое состояние", "", true, true),
+          ...data.conditions.map((name) => new Option(name, name)),
+        );
+        $("vriFilter").replaceChildren(
+          new Option("Любой ВРИ", "", true, true),
+          ...data.vri.map((name) => new Option(name, name)),
+        );
+        const region = $("regionInput");
+        const district = $("districtInput");
+        region.replaceChildren(
+          new Option("Все регионы", "", true, true),
+          ...data.regions.map((name) => new Option(name, name)),
+        );
+        const updateDistricts = () => {
+          const names = region.value
+            ? [
+                ...new Set(
+                  data.locations
+                    .filter((location) => location.region === region.value)
+                    .map((location) => location.district)
+                    .filter(Boolean),
+                ),
+              ].sort()
+            : data.districts;
+          district.replaceChildren(
+            new Option("Все районы", "", true, true),
+            ...names.map((name) => new Option(name, name)),
+          );
+        };
+        updateDistricts();
+        region.addEventListener("change", updateDistricts);
+        region.addEventListener("resetDistricts", updateDistricts);
+        region.addEventListener("change", () => findAnalogs());
+        district.addEventListener("change", () => findAnalogs());
+      }
+    } catch {}
+    initQuickFilters();
+    syncQuickFilters();
 
-        document.addEventListener("dealTypeChanged", () => findAnalogs());
-        try {
-            const response = await fetch("/api/meta/filters?section=" + encodeURIComponent(section));
-            if (response.ok) {
-                const data = await response.json();
-                const condition = $("conditionFilter");
-                condition.replaceChildren(new Option("Любое состояние", "", true, true),
-                    ...data.conditions.map(name => new Option(name, name)));
-                $("vriFilter").replaceChildren(new Option("Любой ВРИ", "", true, true),
-                    ...data.vri.map(name => new Option(name, name)));
-                const region = $("regionInput");
-                const district = $("districtInput");
-                region.replaceChildren(new Option("Все регионы", "", true, true),
-                    ...data.regions.map(name => new Option(name, name)));
-                const updateDistricts = () => {
-                    const names = region.value ? [...new Set(data.locations.filter(location =>
-                        location.region === region.value).map(location => location.district).filter(Boolean))].sort() : data.districts;
-                    district.replaceChildren(new Option("Все районы", "", true, true),
-                        ...names.map(name => new Option(name, name)));
-                };
-                updateDistricts();
-                region.addEventListener("change", updateDistricts);
-                region.addEventListener("resetDistricts", updateDistricts);
-                region.addEventListener("change", () => findAnalogs());
-                district.addEventListener("change", () => findAnalogs());
-            }
-        } catch {}
-        initQuickFilters();
-        syncQuickFilters();
+    findAnalogs({ silent: true });
+  }
 
-        findAnalogs({ silent: true });
-    }
-
-
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init);
-    } else {
-        init();
-    }
-
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
 })();
 
 (function () {
-    const buttons = document.querySelectorAll(".deal-type-btn");
+  const buttons = document.querySelectorAll(".deal-type-btn");
 
-    const priceLabel = document.getElementById("priceLabel");
-    const pricePerMeterLabel = document.getElementById("pricePerMeterLabel");
+  const priceLabel = document.getElementById("priceLabel");
+  const pricePerMeterLabel = document.getElementById("pricePerMeterLabel");
 
-    if (!buttons.length) return;
+  if (!buttons.length) return;
 
-    let currentDealType = "sale";
-    const unit = (new URLSearchParams(location.search).get("section") || "land") === "land" ? "сотку" : "м²";
+  let currentDealType = "sale";
+  const unit =
+    (new URLSearchParams(location.search).get("section") || "land") === "land" ? "сотку" : "м²";
 
-    buttons.forEach(button => {
-        button.addEventListener("click", function () {
-            currentDealType = this.dataset.deal;
+  buttons.forEach((button) => {
+    button.addEventListener("click", function () {
+      currentDealType = this.dataset.deal;
 
-            buttons.forEach(item => {
-                item.classList.toggle("active", item === this);
-            });
+      buttons.forEach((item) => {
+        item.classList.toggle("active", item === this);
+      });
 
-            if (currentDealType === "rent") {
-                priceLabel.textContent = "Аренда, ₽/мес.";
-                pricePerMeterLabel.textContent = `Аренда за ${unit}, ₽/мес.`;
-            } else {
-                priceLabel.textContent = "Цена объекта, ₽";
-                pricePerMeterLabel.textContent = `Цена за ${unit}, ₽`;
-            }
+      if (currentDealType === "rent") {
+        priceLabel.textContent = "Аренда, ₽/мес.";
+        pricePerMeterLabel.textContent = `Аренда за ${unit}, ₽/мес.`;
+      } else {
+        priceLabel.textContent = "Цена объекта, ₽";
+        pricePerMeterLabel.textContent = `Цена за ${unit}, ₽`;
+      }
 
-            document.dispatchEvent(new CustomEvent("dealTypeChanged", {
-                detail: { type: currentDealType }
-            }));
-        });
+      document.dispatchEvent(
+        new CustomEvent("dealTypeChanged", {
+          detail: { type: currentDealType },
+        }),
+      );
     });
+  });
 })();
 
 document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".nav-dropdown").forEach(dropdown => {
-        dropdown.classList.remove("active", "open");
-    });
+  document.querySelectorAll(".nav-dropdown").forEach((dropdown) => {
+    dropdown.classList.remove("active", "open");
+  });
 
-    document.querySelectorAll(".nav-dropdown-menu").forEach(menu => {
-        menu.classList.remove("active", "open");
-    });
+  document.querySelectorAll(".nav-dropdown-menu").forEach((menu) => {
+    menu.classList.remove("active", "open");
+  });
 
-    document.querySelectorAll(".nav-dropdown-trigger").forEach(trigger => {
-        trigger.classList.remove("active");
-        trigger.setAttribute("aria-expanded", "false");
-    });
+  document.querySelectorAll(".nav-dropdown-trigger").forEach((trigger) => {
+    trigger.classList.remove("active");
+    trigger.setAttribute("aria-expanded", "false");
+  });
 });
