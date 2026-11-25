@@ -29,7 +29,7 @@ function createAuth(store,{json,body,secure=false, sendCode=sendVerification, ca
     return token?store.findSession(digest(token)):null;
   }
   async function handle(request,response,url) {
-    if(!['/api/auth/login','/api/auth/register','/api/auth/verify-email','/api/auth/logout','/api/auth/me'].includes(url.pathname))return false;
+    if(!['/api/auth/login','/api/auth/register','/api/auth/verify-email','/api/auth/logout','/api/auth/me','/api/auth/password'].includes(url.pathname))return false;
     if(url.pathname==='/api/auth/me' && request.method==='GET'){
       const current=await user(request);
       json(response,current?200:401,current?{user:current}:{message:'Войдите в аккаунт.'});
@@ -46,6 +46,27 @@ function createAuth(store,{json,body,secure=false, sendCode=sendVerification, ca
     }
 
     const form=await body(request);
+    if (url.pathname === '/api/auth/password') {
+      const current = await user(request);
+      if (!current) { json(response,401,{message:'Войдите в аккаунт.'}); return true; }
+      const key = 'password:' + current.id;
+      const now = Date.now();
+      for (const [k,v] of attempts) if (v.until <= now) attempts.delete(k);
+      const attempt = attempts.get(key) || {count:0,until:now+900000};
+      if (attempt.count >= 10) { json(response,429,{message:'Слишком много попыток. Повторите через 15 минут.'}); return true; }
+      attempt.count++; attempts.set(key,attempt);
+      const {currentPassword,newPassword,passwordConfirmation} = form;
+      if (typeof currentPassword !== 'string' || currentPassword.length > 1024 || typeof newPassword !== 'string' || newPassword.length < 10 || newPassword.length > 1024 || newPassword !== passwordConfirmation) {
+        json(response,400,{message:'Новый пароль: от 10 символов. Подтверждение должно совпадать.'}); return true;
+      }
+      const account = store.findAccount(current.username);
+      if (!account || !(await verifyPassword(currentPassword,account.password_hash))) { json(response,400,{message:'Текущий пароль неверный.'}); return true; }
+      if (currentPassword === newPassword) { json(response,400,{message:'Новый пароль должен отличаться от текущего.'}); return true; }
+      const token = randomBytes(32).toString('hex');
+      if (!store.changePassword(current.id,account.password_hash,await hashPassword(newPassword),digest(token))) { json(response,409,{message:'Данные изменились. Войдите заново.'}); return true; }
+      attempts.delete(key); cookie(response,token,43200);
+      json(response,200,{message:'Пароль изменён. На остальных устройствах выполнен выход.'}); return true;
+    }
     if (url.pathname === '/api/auth/verify-email') {
       const challenge = typeof form.challenge === 'string' ? form.challenge : '';
       const code = typeof form.code === 'string' ? form.code : '';

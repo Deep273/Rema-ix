@@ -34,7 +34,7 @@ function setMode(value) {
   document.getElementById('mode-login').setAttribute('aria-pressed', !value);
   document.getElementById('mode-register').setAttribute('aria-pressed', value);
   document.querySelector('.form-heading h2').textContent = value ? 'Создать аккаунт' : 'Вход в аккаунт';
-  document.querySelector('.form-heading p').textContent = value ? 'Зарегистрируйтесь для доступа к LandScope.' : 'Введите почту и пароль для доступа к LandScope.';
+  document.querySelector('.form-heading p').textContent = value ? 'Зарегистрируйтесь для доступа к ocenshik-plus.' : 'Введите почту и пароль для доступа к ocenshik-plus.';
   submit.textContent = value ? 'Зарегистрироваться' : 'Войти';
 }
 document.getElementById('mode-login').addEventListener('click', () => setMode(false));
@@ -113,7 +113,7 @@ form.addEventListener('submit', async event => {
     if (response.ok) { location.replace('/'); return; }
 
     if (registering && [401, 404].includes(response.status)) {
-      error.textContent = 'На сервере запущена старая версия без регистрации. Перезапустите обновлённый LandScope через start.cmd.';
+      error.textContent = 'На сервере запущена старая версия без регистрации. Перезапустите обновлённый ocenshik-plus через start.cmd.';
       error.hidden = false;
       return;
     }

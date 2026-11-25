@@ -976,7 +976,7 @@ $("export-excel").addEventListener("click", async event => {
     exportUrl = URL.createObjectURL(workbook);
     const link = document.createElement("a");
     link.href = exportUrl;
-    link.download = "LandScope — объявления.xlsx";
+    link.download = "ocenshik-plus — объявления.xlsx";
     link.click();
   } catch {
     status.textContent = "Не удалось сформировать Excel. Попробуйте ещё раз.";
@@ -1488,7 +1488,7 @@ if (hasReport) {
   location.replace("/report/" + page + "/?section=" + section);
 } else {
   document.querySelector("main h1").textContent = sectionNames[section];
-  document.title = sectionNames[section] + " · LandScope";
+  document.title = sectionNames[section] + " · ocenshik-plus";
   if (section === "commercial") {
     $("commercial-type-heading").hidden = false;
     conditions.splice(0, conditions.length, ...ru09Conditions);

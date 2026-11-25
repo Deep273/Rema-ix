@@ -1,0 +1,5 @@
+/data/
+/mail-settings.clixml
+.env
+.env.*
+!.env.example

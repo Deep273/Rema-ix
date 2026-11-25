@@ -1,3 +1,10 @@
+if (!document.querySelector('link[data-account-style]')) {
+  const style = document.createElement('link');
+  style.rel = 'stylesheet';
+  style.href = '/css/account-controls.css?v=2';
+  style.dataset.accountStyle = '';
+  document.head.append(style);
+}
 (async () => {
   const response = await fetch('/api/auth/me', { cache: 'no-store' });
   if (response.status === 401) { location.replace('/login.html'); return; }
@@ -12,7 +19,9 @@
   avatar.className = 'account-avatar';
   avatar.setAttribute('aria-hidden', 'true');
   avatar.textContent = user.username.slice(0, 1).toUpperCase();
-  const label = document.createElement('span');
+  const label = document.createElement('a');
+  label.href = '/profile.html';
+  label.title = 'Открыть личный кабинет';
   label.className = 'account-name';
   label.textContent = user.username;
   const button = document.createElement('button');
@@ -39,3 +48,11 @@
 window.addEventListener('pageshow', event => {
   if (event.persisted) location.reload();
 });
+
+
+const stickyHeader = document.querySelector('body > .header, body > .site-header');
+if(stickyHeader) {
+  const measureHeader = () => document.documentElement.style.setProperty('--site-header-height',stickyHeader.getBoundingClientRect().height + 'px');
+  new ResizeObserver(measureHeader).observe(stickyHeader);
+  measureHeader();
+}

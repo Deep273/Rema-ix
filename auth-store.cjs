@@ -77,6 +77,16 @@ function createStore(filename = path.join(__dirname, 'data', 'accounts.sqlite'))
     findAccount(username) {
       return db.prepare('SELECT id,username,password_hash FROM landscope_users WHERE username=? AND active=1').get(username);
     },
+    changePassword(id, previousHash, nextHash, tokenHash) {
+      db.exec('BEGIN IMMEDIATE');
+      try {
+        const result = db.prepare('UPDATE landscope_users SET password_hash=? WHERE id=? AND password_hash=? AND active=1').run(nextHash,id,previousHash);
+        if (!result.changes) { db.exec('ROLLBACK'); return false; }
+        db.prepare('DELETE FROM landscope_sessions WHERE user_id=?').run(id);
+        db.prepare('INSERT INTO landscope_sessions(token_hash,user_id,expires_at) VALUES (?,?,unixepoch()+43200)').run(tokenHash,id);
+        db.exec('COMMIT'); return true;
+      } catch(error) { db.exec('ROLLBACK'); throw error; }
+    },
     createAccount(username, passwordHash) {
       return db.prepare('INSERT INTO landscope_users(username,password_hash) VALUES (?,?)').run(username,passwordHash);
     },
@@ -94,6 +104,8 @@ function createStore(filename = path.join(__dirname, 'data', 'accounts.sqlite'))
         if (previous) db.prepare('DELETE FROM landscope_sessions WHERE token_hash=?').run(previous);
         db.prepare('DELETE FROM landscope_sessions WHERE expires_at<=unixepoch()').run();
         db.prepare('INSERT INTO landscope_sessions(token_hash,user_id,expires_at) VALUES (?,?,unixepoch()+43200)').run(hash,userId);
+        // Keep the current login and the most recent other active session.
+        db.prepare('DELETE FROM landscope_sessions WHERE user_id=? AND token_hash<>? AND token_hash NOT IN (SELECT token_hash FROM landscope_sessions WHERE user_id=? AND token_hash<>? ORDER BY created_at DESC,rowid DESC LIMIT 1)').run(userId,hash,userId,hash);
         db.exec('COMMIT');
       } catch (error) { db.exec('ROLLBACK'); throw error; }
     },
